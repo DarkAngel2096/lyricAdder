@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/DarkAngel2096/lyricAdder/issues"
   },
-  "homepage": "https://github.com/DarkAngel2096/lyricAdder#readme"
+  "homepage": "https://github.com/DarkAngel2096/lyricAdder#readme",
+  "dependencies": {
+    "electron": "^3.0.0"
+  }
 }
