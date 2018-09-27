@@ -1,25 +1,43 @@
 <!DOCTYPE html>
-
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Lyric Adding Thingy</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
 
-        <ul>
-            <li>We are using node <script>document.write(process.versions.node)</script></li>
-            <li>Chrome <script>document.write(process.versions.chrome)</script></li>
-            <li>and Electron <script>document.write(process.versions.electron)</script></li>
-        </ul>
+<head>
+    <meta charset="UTF-8">
+    <title>Lyric Adding Thingy</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="./css/mainTheme.css">
+</head>
 
-        <hr>
+<body>
+    <div id="wrapper" class="toggled">
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand branding">
+                    <i class="far fa-closed-captioning">Lyrics</i>
+                </li>
+            </ul>
+            <div class="about">
+                Created by DarkAngel2096
+                <br> v
+                <span id="version"></span>
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+        <div id="main-page">
+            <h1>Hello World!</h1>
+            <ul>
+                <li>We are using node <script>document.write(process.versions.node)</script></li>
+                <li>Chrome <script>document.write(process.versions.chrome)</script></li>
+                <li>and Electron <script>document.write(process.versions.electron)</script></li>
+            </ul>
+            <hr>
+            <textarea name="LyricInput" style="width:250px;height:250px;"></textarea>
+            <hr>
+            <button> Click! </button>
+        </div>
+    </div>
+</body>
 
-        <textarea name="LyricInput" style="width:250px;height:250px;"></textarea>
-
-        <hr>
-
-        <button> Click! </button>
-    </body>
 </html>

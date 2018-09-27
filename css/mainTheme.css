@@ -1,0 +1,53 @@
+body {
+    overflow: hidden;
+}
+
+#wrapper {
+    padding-left: 0px;
+    clear: both;
+}
+
+#wrapper.toggled {
+    padding-left: 150px;
+}
+
+#sidebar-wrapper {
+    position: fixed;
+    left: 150px;
+    width: 0%;
+    height: 100%;
+    margin-left: -150px;
+    background: #C0C0C0;
+    overflow-y: auto;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 150px;
+}
+
+.about {
+    font-size: xx-small;
+    color: red;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+.branding {
+    font-size: xx-large;
+    color: blue;
+
+}
+
+.sidebar-nav {
+    position: absolute;
+    top: 0px;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 10px;
+    line-height: 20px;
+}
