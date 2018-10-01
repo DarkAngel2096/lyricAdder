@@ -2,11 +2,6 @@ body {
     overflow: hidden;
 }
 
-#wrapper {
-    padding-left: 0px;
-    clear: both;
-}
-
 #wrapper.toggled {
     padding-left: 150px;
 }
@@ -17,12 +12,26 @@ body {
     width: 0%;
     height: 100%;
     margin-left: -150px;
+    margin-top: -8px;
     background: #C0C0C0;
     overflow-y: auto;
 }
 
 #wrapper.toggled #sidebar-wrapper {
     width: 150px;
+}
+
+#page-content-wrapper {
+    position: absolute;
+}
+
+#lyricsInputArea {
+    height: 500px;
+    width: 600px;
+}
+
+span {
+    color: rgba(155, 155, 200, 0.75)
 }
 
 .about {
@@ -33,10 +42,14 @@ body {
     left: 20px;
 }
 
+.hidden {
+    display: none;
+}
+
 .branding {
     font-size: xx-large;
     color: blue;
-
+    padding: 10px 0px;
 }
 
 .sidebar-nav {
@@ -50,4 +63,21 @@ body {
 .sidebar-nav li {
     text-indent: 10px;
     line-height: 20px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: rgb(255, 0, 0);
+    margin: 5px 0px;
+}
+
+.sidebar-nav li a:hover {
+    background: rgba(166, 166, 166, 0.5);
+    color: rgba(255, 0, 0, 0.5);
+}
+
+.sidebar-nav li a:active, .sidebar-nav li a:focus {
+    background: rgba(180, 180, 180, 0.5);
+    color: rgba(255, 0, 100, 0.5);
 }

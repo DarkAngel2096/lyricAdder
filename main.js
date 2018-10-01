@@ -1,14 +1,28 @@
 const electron = require("electron");
 const { app, BrowserWindow } = require("electron");
+const fs = require("fs");
 
 let win;
 
+var configTemplate = {
+    "pathToChartFile": "",
+    "lyricsInput": ""
+}
+
 function createWindow () {
-    win = new BrowserWindow({ width: 800, height: 600});
+    win = new BrowserWindow({ width: 1400, height: 900});
 
     win.loadFile("index.html");
 
-    //win.webContents.openDevTools();
+    var configExists = !fs.existsSync("./config.json", "utf8");
+
+    if (configExists) {
+        fs.writeFileSync("./config.json", JSON.stringify(configTemplate, null, "\t"), "utf8", function (err) {
+            console.log(err);
+        });
+    }
+
+    win.webContents.openDevTools();
 
     win.on("closed", () => {
         win = null;
