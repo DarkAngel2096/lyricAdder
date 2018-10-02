@@ -1,0 +1,5 @@
+#ignore config file
+config.json
+
+#ignore readme
+README.md

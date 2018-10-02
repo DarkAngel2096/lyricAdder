@@ -1,0 +1,83 @@
+body {
+    overflow: hidden;
+}
+
+#wrapper.toggled {
+    padding-left: 150px;
+}
+
+#sidebar-wrapper {
+    position: fixed;
+    left: 150px;
+    width: 0%;
+    height: 100%;
+    margin-left: -150px;
+    margin-top: -8px;
+    background: #C0C0C0;
+    overflow-y: auto;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 150px;
+}
+
+#page-content-wrapper {
+    position: absolute;
+}
+
+#lyricsInputArea {
+    height: 500px;
+    width: 600px;
+}
+
+span {
+    color: rgba(155, 155, 200, 0.75)
+}
+
+.about {
+    font-size: xx-small;
+    color: red;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+.branding {
+    font-size: xx-large;
+    color: blue;
+    padding: 10px 0px;
+}
+
+.sidebar-nav {
+    position: absolute;
+    top: 0px;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 10px;
+    line-height: 20px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: rgb(255, 0, 0);
+    margin: 5px 0px;
+}
+
+.sidebar-nav li a:hover {
+    background: rgba(166, 166, 166, 0.5);
+    color: rgba(255, 0, 0, 0.5);
+}
+
+.sidebar-nav li a:active, .sidebar-nav li a:focus {
+    background: rgba(180, 180, 180, 0.5);
+    color: rgba(255, 0, 100, 0.5);
+}
