@@ -47,6 +47,7 @@
                 <p>This program will make the process of adding lyrics into a .chart (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into empty lyric events</p>
                 <p>No more selecting the lyric textbox in Moonscraper and remove the text "lyric " from it (by complete mistake of course...) or messing up the .chart file itself in a text editor</p>
                 <p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
+                <input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>
             </div>
             <!--<div id="chartInfoPage" class="pane hidden">
                 <h1>Some basic info about the chart selected</h1>
@@ -57,7 +58,7 @@
                 <h1>Input the lyrics</h1>
                 <hr>
                 <label for="chartInput">Select the chart to modify</label>
-                <input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" oninput="writePath()"></input>
+                <input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
                 <br>
                 <div id="chartAndPhraseInfo" class="pane hidden">
                     <br>
