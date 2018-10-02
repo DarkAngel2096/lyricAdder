@@ -3,3 +3,6 @@ config.json
 
 #ignore readme
 README.md
+
+#ignore release-builds folder
+release-builds/

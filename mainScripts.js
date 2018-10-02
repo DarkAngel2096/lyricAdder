@@ -134,17 +134,15 @@ function readChartFile() {
                 break;
             }
             default: {
-                if (i = indicies.length - 1 && i == 3) {
+                if (i = indicies.length) {
 
-                    console.log("only difficulty found");
-                } else if (i = indicies.length - 1 && i != 3) {
-
-                    console.log("last difficulty found");
-                } else if (i <= 3 && i < indicies.length) {
-
-                    console.log("some difficulties");
+                    console.log("found something");
+                    break;
+                } else {
+                    
+                    console.log("found more difficulties");
+                    break;
                 }
-                break;
             }
         }
     }
