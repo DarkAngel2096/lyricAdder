@@ -6,6 +6,8 @@ var chartRead = false;
 var config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
 
 // Global HTML element variables
+document.getElementById("version").innerHTML = config.version;
+
 var HTMLChartFilePath = document.getElementById("chartFilePathInput");
 var HTMLLyricInput = document.getElementById("lyricsInputArea");
 
@@ -139,7 +141,7 @@ function readChartFile() {
                     console.log("found something");
                     break;
                 } else {
-                    
+
                     console.log("found more difficulties");
                     break;
                 }

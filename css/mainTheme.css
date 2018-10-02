@@ -34,6 +34,10 @@ span {
     color: rgba(155, 155, 200, 0.75)
 }
 
+#version {
+    color: rgb(255, 0, 0)
+}
+
 .about {
     font-size: xx-small;
     color: red;

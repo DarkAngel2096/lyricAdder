@@ -7,7 +7,8 @@ let win;
 var configTemplate = {
     "pathToChartFile": "",
     "lyricsInput": "",
-    "mainPageDoNotShow": false
+    "mainPageDoNotShow": false,
+    "version": app.getVersion()
 }
 
 function createWindow () {
