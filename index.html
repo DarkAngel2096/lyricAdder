@@ -62,7 +62,7 @@
                 <br>
                 <div id="chartAndPhraseInfo" class="pane hidden">
                     <br>
-                    <label for="chartName">Selected chart name:</label>
+                    <label for="chartName">Selected chart:</label>
                     <span id="chartName" name="chartName"></span>
                     <br>
                     <label for="phraseCount">Total amount of phrases in the chart:</label>
@@ -71,11 +71,20 @@
                     <label for="lyricEventCount">Total amount of lyric events in the chart:</label>
                     <span id="lyricEventCount" name="lyricEventCount"></span>
                     <br>
+                    <label for="syllableCount">Total amount of syllables in the input area:</label>
+                    <span id="syllableCount" name="syllableCount"></span>
+                    <br>
                     <label for="phrasesAndLyrics">{phrase number, lyric event count - syllable count}:</label>
-                    <span id="phrasesAndLyrics" name="phrasesAndLyrics"></span>
+                    <button type="button" onclick="showPhrasesAndLyrics()">Toggle lyrics and syllables</button>
+                    <br>
+                    <span id="phrasesAndLyrics" name="phrasesAndLyrics" class="pane hidden"></span>
                 </div>
                 <span id="noChartFile" class="pane hidden" style="color:red;">No .chart file selected</span>
                 <span id="noLyrcisWritten" class="pane hidden" style="color:red;">No lyrics written in the text box below</span>
+                <div id="problemCauses" class="pane hidden">
+                    <span id="caution" style="color:red;">Notice: </span>
+                    <span id="cautionMessage" style="color:red;"></span>
+                </div>
                 <hr>
                 <p>Input the lyrics in the box below with the same syntax as it shows</p>
                 <textarea id="lyricsInputArea" placeholder="First phrase on the first line&#x0a;Sec-ond phrase on sec-ond line&#x0a;And syl-lab-les get sep-a-rat-ed with dash-es&#x0a;&#x0a;Al-so an emp-ty line doesn't mat-ter" onchange="writeLyrics()"></textarea>
@@ -83,7 +92,6 @@
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
                 <button name="restoreButton" type="button" onclick="restoreFromConfig()">Restore lyrics</button>
-                <button type="button" onclick="resetConfig()">Reset Config</button>
             </div>
             <!--<div id="settingsPage" class="pane hidden">
                 <h1>Settings tab</h1>
