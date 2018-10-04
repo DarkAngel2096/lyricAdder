@@ -82,8 +82,7 @@
                 <span id="noChartFile" class="pane hidden" style="color:red;">No .chart file selected</span>
                 <span id="noLyrcisWritten" class="pane hidden" style="color:red;">No lyrics written in the text box below</span>
                 <div id="problemCauses" class="pane hidden">
-                    <span id="caution" style="color:red;">Notice: </span>
-                    <span id="cautionMessage" style="color:red;"></span>
+                    <span id="cautionMessage"></span>
                 </div>
                 <hr>
                 <p>Input the lyrics in the box below with the same syntax as it shows</p>
@@ -92,6 +91,7 @@
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
                 <button name="restoreButton" type="button" onclick="restoreFromConfig()">Restore lyrics</button>
+                <button name="restoreButton" id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
             </div>
             <!--<div id="settingsPage" class="pane hidden">
                 <h1>Settings tab</h1>

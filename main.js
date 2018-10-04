@@ -5,10 +5,11 @@ const fs = require("fs");
 let win;
 
 var configTemplate = {
-    "pathToChartFile": "",
-    "lyricsInput": "",
+    "pathToBackupFolder": "../lyricAdder_backups",
     "mainPageDoNotShow": false,
-    "version": app.getVersion()
+    "version": app.getVersion(),
+    "pathToChartFile": "",
+    "lyricsInput": ""
 }
 
 function createWindow () {
@@ -16,19 +17,32 @@ function createWindow () {
 
     win.loadFile("index.html");
 
-    var configExists = !fs.existsSync("./config.json", "utf8");
-
-    if (configExists) {
-        fs.writeFileSync("./config.json", JSON.stringify(configTemplate, null, "\t"), "utf8", function (err) {
-            console.log(err);
-        });
-    }
+    testPaths();
 
     win.webContents.openDevTools();
 
     win.on("closed", () => {
         win = null;
     });
+}
+
+function testPaths() {
+    var needsBackupFolder = !fs.existsSync("../lyricAdder_backups");
+
+    var needsConfigFile = needsBackupFolder || !fs.existsSync("../lyricAdder_backups/config.json");
+
+    createNeededPaths(needsBackupFolder, needsConfigFile);
+}
+
+function createNeededPaths(needsBackupFolder, needsConfigFile) {
+    if (needsBackupFolder) {
+        fs.mkdirSync("../lyricAdder_backups");
+    }
+    if (needsConfigFile) {
+        fs.writeFileSync("../lyricAdder_backups/config.json", JSON.stringify(configTemplate, null, "\t"), "utf8", function (err) {
+            if (err) console.log("Problems with creating config: " + err);
+        });
+    }
 }
 
 app.on("ready", createWindow);

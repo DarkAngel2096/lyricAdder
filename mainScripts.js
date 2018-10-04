@@ -2,11 +2,12 @@
 const fs = require("fs");
 
 // Other variables needed (or just to make the program run smoother)
-var config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
+var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
 var lyricsInputFull;
-var lyricsInputArray;
+var lyricsInputArray;           // 2D array
 var toggleForLyricsAndSyllables = false;
-var readyToWriteFiles = false;
+
+var modifiedOutputFile;
 
 // Global HTML element variables
 document.getElementById("version").innerHTML = config.version;
@@ -27,19 +28,32 @@ var HTMLNoLyricsWritten = document.getElementById("noLyrcisWritten");
 var HTMLErrorDiv = document.getElementById("problemCauses");
 var HTMLErrorMessage = document.getElementById("cautionMessage");
 
+var HTMLWriteButton = document.getElementById("writeButton");
+
 // .chart file variables with different info
 var fullChart;
 var chartInfo;
 var chartSync;
 var eventsAll;
-var eventsPhraseArray;
+var eventsPhraseArray;          // 2D array
 var difficulties;
+var modifiedLyricEventArray;    // single dimension for ease of use
 
 // Custom error messages on the GUI
-function customErrorMessage(active, message) {
+function customErrorMessage(active, messageType, message) {
     if (active) {
         HTMLErrorDiv.style.display = "block";
-        HTMLErrorMessage.innerHTML = message;
+
+        if (messageType == "error") {
+            HTMLErrorMessage.style.color = "red";
+            HTMLErrorMessage.innerHTML = "Error: " + message;
+        } else if (messageType == "notice") {
+            HTMLErrorMessage.style.color = "yellow";
+            HTMLErrorMessage.innerHTML = "Notice: " + message;
+        } else if (messageType == "completed") {
+            HTMLErrorMessage.style.color = "green";
+            HTMLErrorMessage.innerHTML = "Completed: " + message;
+        }
     } else if (!active) {
         HTMLErrorDiv.style.display = "none";
     }
@@ -49,7 +63,7 @@ function customErrorMessage(active, message) {
 function writePath() {
     if (HTMLChartFilePath.files[0] !== undefined) {
         config.pathToChartFile = HTMLChartFilePath.files[0].path;
-        fs.writeFileSync("./config.json", JSON.stringify(config, null, "\t"), "utf8", function (err) {
+        fs.writeFileSync(config.pathToBackupFolder + "/config.json", JSON.stringify(config, null, "\t"), "utf8", function (err) {
             console.log(err);
         });
     }
@@ -61,7 +75,7 @@ function writeLyrics() {
     var tempValue = HTMLLyricInput.value;
     if (tempValue !== "") {
         config.lyricsInput = tempValue;
-        fs.writeFileSync("./config.json", JSON.stringify(config, null, "\t"), "utf8", function (err) {
+        fs.writeFileSync(config.pathToBackupFolder + "/config.json", JSON.stringify(config, null, "\t"), "utf8", function (err) {
             console.log(err);
         });
     }
@@ -86,6 +100,8 @@ function showPhrasesAndLyrics() {
 
 // Show chart and lyric input info
 function changeFields() {
+    customErrorMessage(false);
+
     if (HTMLChartFilePath.files[0] === undefined) {
         HTMLNoChartFile.style.display = "block";
     } else if (HTMLNoChartFile.style.display != "none") {
@@ -109,18 +125,17 @@ function changeFields() {
         var phrasesAmounts = testLyricEventsAndSyllables();
 
         HTMLChartInfoDiv.style.display = "block";
+        HTMLWriteButton.style.display = "block";
         HTMLChartName.innerHTML = chartName;
         HTMLPhraseCount.innerHTML = eventsPhraseArray.length + " phrases found";
         HTMLLyricEventCount.innerHTML = lyricEventCount + " lyric events found";
         HTMLSyllableCount.innerHTML = syllableCount + " syllables found";
         HTMLPhrasesAndLyrics.innerHTML = phrasesAmounts;
 
-        readyToWriteFiles = true;
-
         console.log("it took: " + (Date.now() - startTime) + "ms to do all the things");
     } else if (HTMLChartInfoDiv.style.display != "none") {
         HTMLChartInfoDiv.style.display = "none";
-        readyToWriteFiles = false;
+        HTMLWriteButton.style.display = "none";
     }
 }
 
@@ -176,6 +191,7 @@ function readAndSeparateChartFile() {
 }
 
 // Reading the main song info and updating the HTML elements
+// Return "songName by artistName"
 function readSongInfo() {
     var tempSongName, tempArtistName;
     for (var i = 0; i < chartInfo.length; i++) {
@@ -191,6 +207,8 @@ function readSongInfo() {
     return chartName;
 }
 
+// Reading events list and modifying a copy of it to only have lyric events in an array one phrase in one index (2D array)
+// Return count of lyric events
 function readAndModifyEvents() {
     var tempEventArray = eventsAll.slice();
     eventsPhraseArray = [];
@@ -214,9 +232,9 @@ function readAndModifyEvents() {
 
     if (tempPhraseStarts.length != tempPhraseEnds.length) {
         if (tempPhraseStarts.length < tempPhraseEnds.length) {
-            customErrorMessage(true, "The phrase event counts are different causing the counts above not to be correct (phrase_starts missing)");
+            customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_starts missing)");
         } else if (tempPhraseStarts.length > tempPhraseEnds.length){
-            customErrorMessage(true, "The phrase event counts are different causing the counts above not to be correct (phrase_ends missing)");
+            customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_ends missing)");
         }
     } else if (tempPhraseStarts.length == tempPhraseEnds.length) {
         customErrorMessage(false);
@@ -234,6 +252,8 @@ function readAndModifyEvents() {
     return lyricCount;
 }
 
+// Reading the lyric textarea and creating an array with each row being it's own phrase and splitting syllables after that (2D array)
+// Return count of syllables
 function readLyricInput() {
     lyricsInputFull = HTMLLyricInput.value.trim().split("\n");
     lyricsInputArray = [];
@@ -253,6 +273,8 @@ function readLyricInput() {
     return syllableCount;
 }
 
+// Test if the syllable array length and lyric event array lengths are the same
+// Return a string of each phrase and it's event / syllable count
 function testLyricEventsAndSyllables() {
     var phraseLyricSyllables = [];
     var morePhrases = 0;
@@ -282,4 +304,117 @@ function testLyricEventsAndSyllables() {
     }
 
     return phraseLyricSyllables.join(", ");
+}
+
+// Write new chart Button pressed
+function testAndWriteChart() {
+    var startTime = Date.now();
+
+    var tests = testReadChartAndLrics();
+
+    if (tests) {
+        var backup = writeBackupOfOriginalChart();
+
+        if (backup) {
+            modifyEventsAndOriginalChart();
+
+            overwriteOriginalFile();
+        }
+    }
+
+    console.log("it took: " + (Date.now() - startTime) + "ms to do tests and write files");
+}
+
+// Complete tests between the syllable array and lyric event array
+// Return either true if all good or false if problems occured
+function testReadChartAndLrics() {
+    if (eventsPhraseArray.length != lyricsInputArray.length) {
+        customErrorMessage(true, "error" ,"Not the same amount of phrases");
+        return false;
+    } else if (eventsPhraseArray.length == lyricsInputArray.length) {
+        customErrorMessage(false);
+        var tempMessage = "";
+
+        for (var i = 0; i < eventsPhraseArray.length; i++) {
+            if (eventsPhraseArray[i].length != lyricsInputArray[i].length) {
+                tempMessage += "(phrase: " + (i + 1) + ", lyric events: " + eventsPhraseArray[i].length + ", syllables: " + lyricsInputArray[i].length + ")";
+            }
+        }
+
+        if (tempMessage != "") {
+            customErrorMessage(true, "error" ,tempMessage);
+            return false;
+        } else if (tempMessage == "") {
+            customErrorMessage(false);
+            return true;
+        }
+    }
+}
+
+// Write a backup file of the selected .chart file in a folder/file
+function writeBackupOfOriginalChart() {
+    var chartName, artistName;
+    for (var i = 0; i < chartInfo.length; i++) {
+        if (chartInfo[i].includes("Name =")) {
+            tempSongName = chartInfo[i].split("\"")[1];
+        }
+        if (chartInfo[i].includes("Artist =")) {
+            tempArtistName = chartInfo[i].split("\"")[1];
+        }
+    }
+
+    var backupFileName = tempSongName.replace(/ /g, "") + "_" + tempArtistName.replace(/ /g, "") + "_backup.chart";
+
+    fs.writeFileSync(config.pathToBackupFolder + "/" + backupFileName, fullChart.join("\r\n"), "utf8", function (err) {
+        if (err) {
+            console.log("Problems with writing the chart backup: " + err);
+            customErrorMessage(true, "error" ,"Problems writing the backup of the original chart, stopping the process (check console)");
+            return false;
+        }
+    });
+    console.log("Backup file written");
+    customErrorMessage(false);
+    return true;
+}
+
+// Modify the events and update the variable with all chart info in it
+function modifyEventsAndOriginalChart() {
+    modifiedOutputFile = fullChart.slice();
+    modifiedLyricEventArray = [];
+
+    for (var i = 0; i < eventsPhraseArray.length; i++) {
+        for (var j = 0; j < eventsPhraseArray[i].length; j++) {
+            //console.log(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
+            modifiedLyricEventArray.push(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
+        }
+    }
+
+    var found = 0;
+    var extra = 0;
+
+    for (var i = 0; i < eventsAll.length; i++) {
+        if (modifiedLyricEventArray.length > 0) {
+            if (eventsAll[i].includes(modifiedLyricEventArray[0].substring(0, (modifiedLyricEventArray[0].indexOf("E \"lyric") + 9)))) {
+                found++;
+                eventsAll[i] = modifiedLyricEventArray.shift();
+            } else {
+                extra++;
+            }
+        }
+    }
+
+    modifiedOutputFile.splice(modifiedOutputFile.indexOf(eventsAll[0]), eventsAll.length, eventsAll.join("\r\n"));
+}
+
+// Overwrite the original file with the modified one with lyrics in it
+function overwriteOriginalFile() {
+    try {
+        fs.writeFileSync(config.pathToChartFile, modifiedOutputFile.join("\r\n"), "utf8");
+        console.log("Overwrite done without problems!");
+        HTMLChartInfoDiv.style.display = "none";
+        customErrorMessage(true, "completed", "The original chart has been modified, playtest to make sure everything works!");
+    } catch (err) {
+        console.log("Problems writing the chart file: " + err);
+        customErrorMessage(true, "error", "Problems occured while writing the chart file, check the console for more info.");
+    }
 }
