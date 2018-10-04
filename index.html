@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lyric Adding Thingy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="./css/mainTheme.css">
 </head>
@@ -59,6 +60,7 @@
                 <hr>
                 <label for="chartInput">Select the chart to modify</label>
                 <input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
+                <button type="button" onclick="getLyricsFromChartButton()">Read .chart for lyrics</button>
                 <br>
                 <div id="chartAndPhraseInfo" class="pane hidden">
                     <br>
@@ -100,10 +102,19 @@
             </div>-->
         </div>
     </div>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
     <script>
         function hideAll() {
             jQuery(".pane").addClass("hidden");
@@ -116,6 +127,14 @@
                 $("#" + target).toggleClass("hidden");
             }
         });
+    </script><script>
+	document.addEventListener("keydown", function (e) {
+		if (e.which === 123) {
+			require('electron').remote.getCurrentWindow().toggleDevTools();
+		} else if (e.which === 116) {
+			location.reload();
+		}
+	});
     </script>
     <script src="./mainScripts.js"></script>
 </body>

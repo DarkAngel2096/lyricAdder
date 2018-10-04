@@ -98,6 +98,21 @@ function showPhrasesAndLyrics() {
     }
 }
 
+// Button to read the .chart file for lyrics and output on screen
+function getLyricsFromChartButton() {
+    if (HTMLLyricInput.value == "") {
+        HTMLLyricInput.value = "-";
+    }
+
+    changeFields();
+
+    var temp = getLyricsFromChart();
+
+    HTMLLyricInput.value = temp;
+
+    changeFields();
+}
+
 // Show chart and lyric input info
 function changeFields() {
     customErrorMessage(false);
@@ -304,6 +319,39 @@ function testLyricEventsAndSyllables() {
     }
 
     return phraseLyricSyllables.join(", ");
+}
+
+// Get the lyric events that are filled in from the .chart file
+function getLyricsFromChart() {
+    var lyricsPerPhrase = [];
+
+    if (eventsPhraseArray.length == 0) {
+        customErrorMessage(true, "notice", "No lyric events found form the chart");
+    } else if (eventsPhraseArray.length != 0) {
+        customErrorMessage(false);
+
+
+
+        for (var i = 0; i < eventsPhraseArray.length; i++) {
+            var tempString = "";
+
+            for (var j = 0; j < eventsPhraseArray[i].length; j++) {
+                var temp = eventsPhraseArray[i][j].split("lyric ")[1];
+
+                temp = temp.substring(0, temp.length - 1);
+
+                if (temp.endsWith("-")) {
+                    tempString += temp;
+                } else {
+                    tempString += temp + " ";
+                }
+            }
+
+            lyricsPerPhrase.push(tempString.trim());
+        }
+    }
+
+    return lyricsPerPhrase.join("\n");
 }
 
 // Write new chart Button pressed

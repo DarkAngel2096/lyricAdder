@@ -13,13 +13,13 @@ var configTemplate = {
 }
 
 function createWindow () {
-    win = new BrowserWindow({ width: 1400, height: 900});
+    win = new BrowserWindow({ width: 1000, height: 900});
 
     win.loadFile("index.html");
 
     testPaths();
 
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 
     win.on("closed", () => {
         win = null;
