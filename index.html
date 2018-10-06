@@ -88,12 +88,12 @@
                 </div>
                 <hr>
                 <p>Input the lyrics in the box below with the same syntax as it shows</p>
+                <button name="restoreButton" id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
                 <textarea id="lyricsInputArea" placeholder="First phrase on the first line&#x0a;Sec-ond phrase on sec-ond line&#x0a;And syl-lab-les get sep-a-rat-ed with dash-es&#x0a;&#x0a;Al-so an emp-ty line doesn't mat-ter" onchange="writeLyrics()"></textarea>
                 <br>
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
                 <button name="restoreButton" type="button" onclick="restoreFromConfig()">Restore lyrics</button>
-                <button name="restoreButton" id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
             </div>
             <!--<div id="settingsPage" class="pane hidden">
                 <h1>Settings tab</h1>
