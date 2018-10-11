@@ -18,6 +18,7 @@ function createWindow () {
     win.loadFile("index.html");
 
     testPaths();
+    testVersion();
 
     //win.webContents.openDevTools();
 
@@ -42,6 +43,21 @@ function createNeededPaths(needsBackupFolder, needsConfigFile) {
         fs.writeFileSync("../lyricAdder_backups/config.json", JSON.stringify(configTemplate, null, "\t"), "utf8", function (err) {
             if (err) console.log("Problems with creating config: " + err);
         });
+    }
+}
+
+function testVersion() {
+    var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
+
+    if (config.version != app.getVersion()) {
+
+        config.version = app.getVersion();
+
+        fs.writeFileSync("../lyricAdder_backups/config.json", JSON.stringify(config, null, "\t"), "utf8", function (err) {
+            if (err) console.log("Problems with creating config: " + err);
+        });
+    } else {
+        
     }
 }
 

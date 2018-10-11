@@ -163,42 +163,59 @@ function readAndSeparateChartFile() {
     var element = "{";
     var idx = fullChart.indexOf(element);
     while (idx != -1) {
-        //console.log(idx);
-        //console.log(fullChart[idx - 1]);
         indicies.push(idx);
         idx = fullChart.indexOf(element, idx + 1);
     }
 
-    //console.log(indicies);
+    indicies.push(fullChart.length);
 
-    for (var i = 0; i < indicies.length; i++) {
-        switch (fullChart[indicies[i] - 1]) {
-            case "[Song]": {
-                chartInfo = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
-                //console.log("[Song] found and stored: " + i + ", " + (i + 1));
-                break;
-            }
-            case "[SyncTrack]": {
-                chartSync = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
-                //console.log("[SyncTrack] found and stored: " + i + ", " + (i + 1));
-                break;
-            }
-            case "[Events]": {
-                eventsAll = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
-                //console.log("[Events] found and stored: " + i + ", " + (i + 1));
-                break;
-            }
-            default: {
-                if (i == indicies.length - 1) {
-                    var temp = fullChart.slice(indicies[i] - 1, fullChart.length - 1);
-                    difficulties.push(temp);
-                    //console.log("found something: " + i + ", " + (i + 1));
+    //console.log(indicies);
+    //console.log(indicies.length);
+
+    if (indicies.length == 1) {
+        customErrorMessage(true, "error", "Nothing useful could be found from the .chart file selected");
+    } else {
+        for (var i = 0; i < indicies.length - 1; i++) {
+            var tempSelection = fullChart[indicies[i] - 1];
+
+            switch (fullChart[indicies[i] - 1]) {
+                case "[Song]": {
+                    chartInfo = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
+                    //console.log("[Song] found and stored: " + i + ", " + (i + 1));
                     break;
-                } else {
-                    var temp = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
-                    difficulties.push(temp);
-                    //console.log("found more difficulties: " + i + ", " + (i + 1));
+                }
+                case "[SyncTrack]": {
+                    chartSync = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
+                    //console.log("[SyncTrack] found and stored: " + i + ", " + (i + 1));
                     break;
+                }
+                case "[Events]": {
+                    eventsAll = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
+                    //console.log("[Events] found and stored: " + i + ", " + (i + 1));
+                    break;
+                }
+                default: {
+                    /*
+                    if (indicies.length <= 3) {
+                        console.log("At most 3 indicies found, nothing more here to do: " + indicies);
+                        break;
+                    } else {
+                        console.log("More than 3 indicies, continue: " + indicies);
+
+                        if (i == indicies.length - 1) {
+                            var temp = fullChart.slice(indicies[i] - 1, fullChart.length - 1);
+                            difficulties.push(temp);
+                            console.log("found something: " + i + ", " + (i + 1));
+                            break;
+                        } else {
+                            var temp = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
+                            difficulties.push(temp);
+                            console.log("found more difficulties: " + i + ", " + (i + 1));
+                            break;
+                        }
+
+                        break;
+                    }*/
                 }
             }
         }
@@ -245,6 +262,26 @@ function readAndModifyEvents() {
         }
     }
 
+    //console.log(tempPhraseEnds);
+    //console.log(tempPhraseStarts);
+
+    var endEventsUsed = 0;
+
+    for (var i = 0; i < tempPhraseStarts.length; i++) {
+        if (tempPhraseStarts[i + 1] > tempPhraseEnds[endEventsUsed] || tempPhraseStarts[i + 1] == undefined) {
+            //console.log("inside the part to take ends out");
+            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseEnds[endEventsUsed]));
+            endEventsUsed++;
+        } else {
+            //console.log("inside part to take to the next start");
+            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseStarts[i + 1]));
+        }
+    }
+
+    //console.log(eventsPhraseArray);
+
+
+/*
     if (tempPhraseStarts.length != tempPhraseEnds.length) {
         if (tempPhraseStarts.length < tempPhraseEnds.length) {
             customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_starts missing)");
@@ -252,11 +289,10 @@ function readAndModifyEvents() {
             customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_ends missing)");
         }
     } else if (tempPhraseStarts.length == tempPhraseEnds.length) {
-        customErrorMessage(false);
         for (var i = 0; i < tempPhraseStarts.length; i++) {
             eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseEnds[i]));
         }
-    }
+    }*/
 
     var lyricCount = 0;
 
@@ -336,10 +372,6 @@ function getLyricsFromChart() {
     if (eventsPhraseArray.length == 0) {
         customErrorMessage(true, "notice", "No lyric events found form the chart");
     } else if (eventsPhraseArray.length != 0) {
-        customErrorMessage(false);
-
-
-
         for (var i = 0; i < eventsPhraseArray.length; i++) {
             var tempString = "";
 
