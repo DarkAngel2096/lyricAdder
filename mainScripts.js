@@ -248,40 +248,66 @@ function readAndModifyEvents() {
     var tempPhraseStartTicks = [];
     var tempPhraseEndTicks = [];
 
-    console.log(tempEventArray[tempEventArray.length - 1]);
+    var tempPhraseStartsIndexes = [];
+    var tempPhraseEndIndexes = [];
+
+    //console.log(tempEventArray[tempEventArray.length - 1]);
 
     for (var i = tempEventArray.length - 1; i >= 0; i--) {
         if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
-            console.log("removing: " + tempEventArray[i]);
+            //console.log("removing: " + tempEventArray[i]);
 
             tempEventArray.splice(i, 1);
         } else if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
-            console.log("moving to starts: " + tempEventArray[i]);
+            //console.log("copying to starts: " + tempEventArray[i]);
 
             tempPhraseStartTicks.push(tempEventArray[i].split("=")[0].trim());
-            tempEventArray.splice(i, 1);
         } else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
-            console.log("moving to ends: " + tempEventArray[i]);
+            //console.log("copying to ends: " + tempEventArray[i]);
 
             tempPhraseEndTicks.push(tempEventArray[i].split("=")[0].trim());
-            tempEventArray.splice(i, 1);
         }
     }
 
     tempPhraseStartTicks.reverse();
     tempPhraseEndTicks.reverse();
 
-    console.log(tempEventArray);
-    console.log(tempPhraseStartTicks);
-    console.log(tempPhraseEndTicks);
-
     var startCount = 0;
-    var endCount = 0;
 
-    for (var i = 0; i < tempEventArray.length; i++) {
+    for (var i = 0; i < tempEventArray.length - 1; i++) {
+        if (tempPhraseStartTicks[startCount] == tempEventArray[i].split("=")[0].trim() && !tempEventArray[i].includes("phrase_start")) {
+            //console.log("Same tick found between: " + tempEventArray[i] + " and " + tempEventArray[i + 1] + " on phrase: " + (startCount + 1));
 
+            var temp = tempEventArray.splice(i + 1, 1);
+            tempEventArray.splice(i, 0, temp.toString());
+
+            startCount++;
+        }
     }
 
+    for (var i = 0; i < tempEventArray.length; i++) {
+        if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
+            tempPhraseStartsIndexes.push(i);
+        } else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
+            tempPhraseEndIndexes.push(i);
+        }
+    }
+
+    var endsUsed = 0;
+
+    for (var i = 0; i < tempPhraseStartsIndexes.length; i++) {
+        if (tempPhraseStartsIndexes[i + 1] > tempPhraseEndIndexes[endsUsed] || tempPhraseStartsIndexes[i + 1] == undefined) {
+            //console.log("from start to end");
+
+            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStartsIndexes[i] + 1, tempPhraseEndIndexes[endsUsed]));
+            endsUsed++;
+        } else {
+            //console.log("from start to start");
+            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStartsIndexes[i] + 1, tempPhraseStartsIndexes[i + 1]));
+        }
+    }
+
+    //console.log(eventsPhraseArray);
 /*
     for (var i = tempEventArray.length - 1; i >= 0; i--) {
         if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
