@@ -245,6 +245,44 @@ function readAndModifyEvents() {
     var tempEventArray = eventsAll.slice();
     eventsPhraseArray = [];
 
+    var tempPhraseStartTicks = [];
+    var tempPhraseEndTicks = [];
+
+    console.log(tempEventArray[tempEventArray.length - 1]);
+
+    for (var i = tempEventArray.length - 1; i >= 0; i--) {
+        if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
+            console.log("removing: " + tempEventArray[i]);
+
+            tempEventArray.splice(i, 1);
+        } else if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
+            console.log("moving to starts: " + tempEventArray[i]);
+
+            tempPhraseStartTicks.push(tempEventArray[i].split("=")[0].trim());
+            tempEventArray.splice(i, 1);
+        } else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
+            console.log("moving to ends: " + tempEventArray[i]);
+
+            tempPhraseEndTicks.push(tempEventArray[i].split("=")[0].trim());
+            tempEventArray.splice(i, 1);
+        }
+    }
+
+    tempPhraseStartTicks.reverse();
+    tempPhraseEndTicks.reverse();
+
+    console.log(tempEventArray);
+    console.log(tempPhraseStartTicks);
+    console.log(tempPhraseEndTicks);
+
+    var startCount = 0;
+    var endCount = 0;
+
+    for (var i = 0; i < tempEventArray.length; i++) {
+
+    }
+
+/*
     for (var i = tempEventArray.length - 1; i >= 0; i--) {
         if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
             tempEventArray.splice(i, 1);
@@ -262,12 +300,39 @@ function readAndModifyEvents() {
         }
     }
 
-    //console.log(tempPhraseEnds);
-    //console.log(tempPhraseStarts);
+    console.log(tempPhraseStarts);
+    console.log(tempPhraseEnds);
 
     var endEventsUsed = 0;
 
     for (var i = 0; i < tempPhraseStarts.length; i++) {
+
+        console.log(tempEventArray[tempPhraseStarts[i] - 1]);
+        console.log(tempEventArray[tempPhraseStarts[i]]);
+
+        console.log();
+
+        //console.log(tempEventArray[tempPhraseStarts[i] - 1].split("=")[0].trim());
+        //console.log(tempEventArray[tempPhraseStarts[i + 1] - 1].split("=")[0].trim());
+
+
+        if (tempPhraseStarts[i + 1] > tempPhraseEnds[endEventsUsed] || tempPhraseStarts[i + 1] == undefined) {
+            console.log("inside the part to take ends out");
+
+
+            //if (tempEventArray[tempPhraseStarts[i] - 1])
+
+            endEventsUsed++;
+        } else {
+            console.log("inside part to take to the next start");
+
+
+        }
+
+
+
+
+
         if (tempPhraseStarts[i + 1] > tempPhraseEnds[endEventsUsed] || tempPhraseStarts[i + 1] == undefined) {
             //console.log("inside the part to take ends out");
             eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseEnds[endEventsUsed]));
@@ -281,7 +346,7 @@ function readAndModifyEvents() {
     //console.log(eventsPhraseArray);
 
 
-/*
+
     if (tempPhraseStarts.length != tempPhraseEnds.length) {
         if (tempPhraseStarts.length < tempPhraseEnds.length) {
             customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_starts missing)");

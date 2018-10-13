@@ -1,6 +1,9 @@
 #ignore config file
 config.json
 
+#ignore old code snippets file
+oldCodeSnippets.js
+
 #ignore readme
 README.md
 
