@@ -26,11 +26,11 @@
                         <i class="fas fa-music"></i> Lyric Input
                     </a>
                 </li>
-                <!--<li>
+                <li>
                     <a class="sideButton" name="settingsPage" href="#">
                         <i class="fas fa-cog"></i> Settings
                     </a>
-                </li>-->
+                </li>
             </ul>
             <div class="about">
                 Created by DarkAngel2096
@@ -50,11 +50,37 @@
                 <p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
                 <input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>
             </div>
-            <!--<div id="chartInfoPage" class="pane hidden">
-                <h1>Some basic info about the chart selected</h1>
+            <div id="settingsPage" class="pane hidden">
+                <h1>Settings</h1>
                 <hr>
-                <p>throw some general info here taken from a read of the chart file if found, keep all that stored in memory for later use as it's good to keep</p>
-            </div>-->
+                <p>some random page for random testings</p>
+                <audio controls id="testMusic">
+                    <source src="song.ogg" type="audio/ogg">
+                </audio>
+                <br>
+
+                <button type="button" onclick="playMusic()">Play / Pause music</button>
+                <br>
+
+                <span id="timings1"></span>
+                <span id="timings2"></span>
+                <br>
+
+                <div id="mainLyrics" class="mainLyrics">
+
+                </div>
+                <br>
+
+                <div id="backupLyric1" class="backupLyric1">
+
+                </div>
+                <br>
+
+                <div id="backupLyric2" class="backupLyric2">
+
+                </div>
+
+            </div>
             <div id="lyricsInputPage" class="pane hidden">
                 <h1>Input the lyrics</h1>
                 <hr>

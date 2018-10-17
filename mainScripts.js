@@ -1,6 +1,9 @@
 // Normal require stuffs
 const fs = require("fs");
 
+// File requires to other .js files
+var songStuffs = require("./soundStuff.js");
+
 // Other variables needed (or just to make the program run smoother)
 var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
 var lyricsInputFull;
@@ -85,6 +88,11 @@ function writeLyrics() {
 // Button to restore the last lyric input from the config file
 function restoreFromConfig() {
     HTMLLyricInput.value = config.lyricsInput;
+}
+
+// For audio play testing purposes
+function playMusic() {
+    songStuffs.music(eventsPhraseArray, chartSync, lyricsInputArray);
 }
 
 // Button to show the {phrase, event count, syllable count} HTML element
