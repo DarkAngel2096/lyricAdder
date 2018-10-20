@@ -30,7 +30,7 @@ body {
     width: 600px;
 }
 
-span {
+#chartName, #phraseCount, #lyricEventCount, #syllableCount, #phrasesAndLyrics {
     color: rgba(155, 155, 200, 0.75)
 }
 
@@ -38,7 +38,7 @@ span {
     color: rgb(255, 0, 0)
 }
 
-.mainLyrics span {
+.mainLyrics {
     font-size: 15px;
     color: green;
 }
