@@ -17,14 +17,6 @@ var lyricTimes;
 
 function music(eventsPhraseArray, chartSync, lyricsInputArray) {
 
-    //console.log(eventsPhraseArray);
-    //console.log(chartSync);
-    //console.log(lyricsInputArray);
-
-    //var tickChanges = changeTicks(eventsPhraseArray, chartSync);
-
-
-
     if (playing) {
         HTMLMusicElem.pause();
         playing = false;
@@ -33,7 +25,7 @@ function music(eventsPhraseArray, chartSync, lyricsInputArray) {
         combineArrays(eventsPhraseArray, chartSync);
 
         HTMLMusicElem.play();
-        createAndUpdateLyricPreview(eventsPhraseArray);
+        //createAndUpdateLyricPreview(eventsPhraseArray);
 
         updateTime();
 
@@ -146,12 +138,50 @@ function combineArrays(eventsPhraseArray, chartSync) {
     lyricTimes = [];
 
     var oldBPMTick;
+    var oldBPM;
+    var oldTPS;
 
     var currentBPM;
     var currentBPMTick;
     var currentBPMTime = 0;
     var currentTPS;
 
+    for (var i = 0; i < combinedArray.length; i++) {
+        if (combinedArray[i].includes(" = B ")) { // BPM marker found, calculation done: ((192 * BPM) / 60)
+            var BPMMarker = combinedArray[i].split(" = B ");
+
+            currentBPM = BPMMarker[1].trim() / Math.pow(10, 3);
+            currentBPMTick = BPMMarker[0].trim();
+            currentTPS = ((192 * currentBPM) / 60);
+
+            if (oldBPMTick != undefined && oldBPM != undefined && oldTPS != undefined) {
+                currentBPMTime = currentBPMTime + ((currentBPMTick - oldBPMTick) / oldTPS);
+            }
+
+            oldBPM = currentBPM;
+            oldBPMTick = currentBPMTick;
+            oldTPS = currentTPS;
+
+            console.log("BPM event: " + combinedArray[i] + ", time: " + currentBPMTime);
+
+        } else if (combinedArray[i].includes(" = E ")) { // lyric event found
+
+            var lyricEvent = combinedArray[i];
+
+            var lyricTick = combinedArray[i].split(" = E ")[0].trim();
+
+            var timeSeconds = currentBPMTime + ((lyricTick - currentBPMTick) / currentTPS);
+
+            lyricTimes.push({
+                time: timeSeconds,
+                lyricEv: lyricEvent
+            });
+
+            console.log("Lyric event: " + combinedArray[i] + ", time: " + timeSeconds);
+        }
+    }
+
+/*
     for (var i = 0; i < combinedArray.length; i++) {
         //console.log(combinedArray[i]);
         if (combinedArray[i].includes(" = B ")) {
@@ -166,9 +196,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
                 currentBPMTime = currentBPMTime + (currentBPMTick - oldBPMTick) / currentTPS;
             }
 
-            oldBPMTick = currentBPMTick;
-
-            //console.log("BPM Marker: " + currentBPM + ", current TPS: " + currentTPS + ", current time: " + currentBPMTime);
+            console.log("BPM Marker: " + currentBPM + ", current TPS: " + currentTPS + ", current time: " + currentBPMTime + ", current tick: " + currentBPMTick + ", old tick: " + oldBPMTick);
         } else if (combinedArray[i].includes(" = E ")) {
             var timeSec;
 
@@ -186,9 +214,11 @@ function combineArrays(eventsPhraseArray, chartSync) {
                 show: combinedArray[i].toString()
             });
         }
+
+        oldBPMTick = currentBPMTick;
     }
 
-    console.log(lyricTimes);
+    console.log(lyricTimes);*/
 }
 
 module.exports = {music}
