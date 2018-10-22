@@ -14,9 +14,12 @@ var HTMLMainLyricDiv = document.getElementById("mainLyrics");
 
 // Global variables used
 var playing = false;
+
+// For combining arrays and getting conversion from ticks to seconds
 var combinedArray;
 var lyricTimes2DArray;
 
+// Display stuff
 var indexer = 0;
 var timing = 0;
 
@@ -70,7 +73,7 @@ function updateLyricPreview() {
 
 function phraseTiming() {
     var randomId = setTimeout(function () {
-        if (indexer < lyricTimes2DArray.length) {
+        if (indexer <= lyricTimes2DArray.length) {
             if (playing) {
                 timing = Math.round(lyricTimes2DArray[indexer + 1][0] * 1000 );
                 console.log(indexer);
@@ -112,16 +115,16 @@ function syllableTiming(index, counter, time) {
     var syllableTime = time;
     var syllableCount = counter;
 
-    console.log("index: " + index + ", counter: " + counter + ", timing: " + syllableTime);
+    console.log("(indexer: " + indexer + ", syllable count: " + syllableCount + ") index: " + index + ", counter: " + counter + ", timing: " + syllableTime + ", syllable: " + syllables[syllableCount].innerHTML);
 
     if (syllableCount < indexNum) {
         var randomId = setTimeout( function () {
             if (playing) {
                 syllables[syllableCount].style.color = "blue";
 
-                if (syllableCount != 0) {
+                //if (syllableCount != 0) {
                     syllableTime = Math.round(lyricTimes2DArray[indexer][syllableCount] * 1000);
-                }
+                //}
                 syllableCount++;
                 syllableTiming(indexNum, syllableCount, syllableTime);
             }
@@ -217,9 +220,11 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
     lyricTimes2DArray = [];
 
-    var tempLyrcTimes = [];
+    var tempLyricTimes = [];
 
-    var oldBPMTick = 0;
+    var oldBPMTick;
+    var oldBPM;
+    var oldTPS;
 
     var currentBPM;
     var currentBPMTick;
@@ -227,38 +232,37 @@ function combineArrays(eventsPhraseArray, chartSync) {
     var currentTPS;
 
     for (var i = 0; i < combinedArray.length; i++) {
-        //console.log(combinedArray[i]);
-        if (combinedArray[i].includes(" = B ")) {
-            // TPS calc = ((192 / BPM) / 60)
+        if (combinedArray[i].includes(" = B ")) { // BPM marker found, calculation done: ((192 * BPM) / 60)
+            var BPMMarker = combinedArray[i].split(" = B ");
 
-            currentBPM = combinedArray[i].slice();
-            currentBPMTick = currentBPM.split(" = B ")[0].trim()
+            currentBPM = BPMMarker[1].trim() / Math.pow(10, 3);
+            currentBPMTick = BPMMarker[0].trim();
+            currentTPS = ((192 * currentBPM) / 60);
 
-            currentTPS = ((192 * (currentBPM.split(" = B ")[1].trim() / Math.pow(10, 3))) / 60);
-
-            if (oldBPMTick != undefined) {
-                currentBPMTime = currentBPMTime + (currentBPMTick - oldBPMTick) / currentTPS;
+            if (oldBPMTick != undefined && oldBPM != undefined && oldTPS != undefined) {
+                currentBPMTime = currentBPMTime + ((currentBPMTick - oldBPMTick) / oldTPS);
             }
 
+            oldBPM = currentBPM;
             oldBPMTick = currentBPMTick;
+            oldTPS = currentTPS;
 
-            console.log("BPM Marker: " + currentBPM + ", current TPS: " + currentTPS + ", current time: " + currentBPMTime + ", current tick: " + currentBPMTick + ", old tick: " + oldBPMTick);
-        } else if (combinedArray[i].includes(" = E ")) {
-            var timeSec;
+            console.log("BPM event: " + combinedArray[i] + ", time: " + currentBPMTime);
 
-            var tempLyricSplit = combinedArray[i].slice().split(" = E \"lyric ");
+        } else if (combinedArray[i].includes(" = E ")) { // lyric event found
 
-            var lyricTick = tempLyricSplit[0].trim();
-            var syllable = tempLyricSplit[1].trim();
+            var lyricEvent = combinedArray[i];
 
-            timeSec = currentBPMTime + (lyricTick - currentBPMTick) / currentTPS;
+            var lyricTick = combinedArray[i].split(" = E ")[0].trim();
 
-            console.log("Adding to array: " + timeSec + ", " + syllable);
+            var timeSeconds = currentBPMTime + ((lyricTick - currentBPMTick) / currentTPS);
 
-            tempLyrcTimes.push({
-                time: timeSec,
-                show: combinedArray[i].toString()
+            tempLyricTimes.push({
+                time: timeSeconds,
+                lyricEv: lyricEvent
             });
+
+            console.log("Lyric event: " + combinedArray[i] + ", time: " + timeSeconds);
         }
     }
 
@@ -270,7 +274,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
         for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 
-            var current = tempLyrcTimes.splice(0, 1);
+            var current = tempLyricTimes.splice(0, 1);
             var difference;
 
             if (j == 0) {
@@ -294,3 +298,82 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
 // Export main module from here
 module.exports = {music}
+
+
+/*
+lyricTimes2DArray = [];
+
+var tempLyrcTimes = [];
+
+var oldBPMTick = 0;
+
+var currentBPM;
+var currentBPMTick;
+var currentBPMTime = 0;
+var currentTPS;
+
+for (var i = 0; i < combinedArray.length; i++) {
+    //console.log(combinedArray[i]);
+    if (combinedArray[i].includes(" = B ")) {
+        // TPS calc = ((192 / BPM) / 60)
+
+        currentBPM = combinedArray[i].slice();
+        currentBPMTick = currentBPM.split(" = B ")[0].trim()
+
+        currentTPS = ((192 * (currentBPM.split(" = B ")[1].trim() / Math.pow(10, 3))) / 60);
+
+        if (oldBPMTick != undefined) {
+            currentBPMTime = currentBPMTime + (currentBPMTick - oldBPMTick) / currentTPS;
+        }
+
+        oldBPMTick = currentBPMTick;
+
+        console.log("BPM Marker: " + currentBPM + ", current TPS: " + currentTPS + ", current time: " + currentBPMTime + ", current tick: " + currentBPMTick + ", old tick: " + oldBPMTick);
+    } else if (combinedArray[i].includes(" = E ")) {
+        var timeSec;
+
+        var tempLyricSplit = combinedArray[i].slice().split(" = E \"lyric ");
+
+        var lyricTick = tempLyricSplit[0].trim();
+        var syllable = tempLyricSplit[1].trim();
+
+        timeSec = currentBPMTime + (lyricTick - currentBPMTick) / currentTPS;
+
+        console.log("Adding to array: " + timeSec + ", " + syllable);
+
+        tempLyrcTimes.push({
+            time: timeSec,
+            show: combinedArray[i].toString()
+        });
+    }
+}
+
+var tempBefore = 0;
+var tempFirstEventInPhrase = 0;
+
+for (var i = 0; i < eventsPhraseArray.length; i++) {
+    var tempArr = [];
+
+    for (var j = 0; j < eventsPhraseArray[i].length; j++) {
+
+        var current = tempLyrcTimes.splice(0, 1);
+        var difference;
+
+        if (j == 0) {
+            difference = current[0].time - tempFirstEventInPhrase;
+            tempFirstEventInPhrase = current[0].time;
+            tempBefore = current[0].time;
+        } else {
+            difference = current[0].time - tempBefore;
+            tempBefore = current[0].time;
+        }
+
+        tempArr[j] = difference;
+        //tempArr[j] = tempLyrcTimes.splice(0, 1);
+    }
+
+    lyricTimes2DArray.push(tempArr);
+}
+
+console.log(lyricTimes2DArray);
+*/
