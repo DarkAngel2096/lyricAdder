@@ -264,6 +264,8 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
             console.log("Lyric event: " + combinedArray[i] + ", time: " + timeSeconds);
         }
+
+        oldBPMTick = currentBPMTick;
     }
 
     var tempBefore = 0;
