@@ -282,7 +282,7 @@ function readAndModifyEvents() {
 
     var startCount = 0;
 
-    for (var i = 0; i < tempEventArray.length - 1; i++) {
+    for (var i = 0; i < tempEventArray.length; i++) {
         if (tempPhraseStartTicks[startCount] == tempEventArray[i].split("=")[0].trim() && !tempEventArray[i].includes("phrase_start")) {
             //console.log("Same tick found between: " + tempEventArray[i] + " and " + tempEventArray[i + 1] + " on phrase: " + (startCount + 1));
 

@@ -26,6 +26,13 @@ var timing = 0;
 var phrases;
 var syllables;
 
+// new display variables
+var phraseNum;
+var syllableNum;
+
+var phraseId;
+var syllableId;
+
 // Main method doing all the thigs needed
 function music(eventsPhraseArray, chartSync, lyricsInputArray) {
     if (playing) {
@@ -37,11 +44,11 @@ function music(eventsPhraseArray, chartSync, lyricsInputArray) {
         createLyricPreview(eventsPhraseArray);
 
         HTMLMusicElem.play();
+
+        playing = true;
         updateLyricPreview();
 
         updateTime();
-
-        playing = true;
     }
 
     HTMLMusicElem.onended = function () {
@@ -66,11 +73,82 @@ function updateLyricPreview() {
     console.log(phrases[0]);
     console.log(HTMLMainLyricDiv.childElementCount);
 
-    timing = Math.round(lyricTimes2DArray[0][0] * 1000);
+    if (phraseNum == undefined) {
+        phraseNum = 0;
+    }
 
-    phraseTiming();
+    phraseId = setInterval(updatePreview, 1);
 }
 
+function updatePreview() {
+    if (playing) {
+        if (phraseNum === phrases.length) {
+            clearInterval(phraseId);
+            console.log("cleared phrase intervall");
+            return;
+        }
+
+        var elemTime = HTMLMusicElem.currentTime.toFixed(2);
+        var lyricTime = lyricTimes2DArray[phraseNum][0].toFixed(2);
+
+        if (elemTime === lyricTime) {
+            if (phraseNum > 1) {
+                phrases[phraseNum - 2].style.display = "none";
+            }
+
+            if (phraseNum > 0) {
+                phrases[phraseNum - 1].style.fontSize = "medium";
+            }
+
+            phrases[phraseNum].style.display = "block";
+            phrases[phraseNum].style.color = "red";
+            phrases[phraseNum].style.fontSize = "x-large";
+            phrases[phraseNum].children[0].style.color = "blue";
+
+            if (phraseNum < HTMLMainLyricDiv.childElementCount - 1) {
+                phrases[phraseNum + 1].style.display = "block";
+            }
+            if (phraseNum < HTMLMainLyricDiv.childElementCount - 2) {
+                phrases[phraseNum + 2].style.display = "block";
+            }
+            if (phraseNum < HTMLMainLyricDiv.childElementCount - 3) {
+                phrases[phraseNum + 3].style.display = "block";
+            }
+            syllables = [];
+            syllables = phrases[phraseNum].children;
+
+            syllableNum = 1;
+
+            console.log(syllables);
+
+            syllableId = setInterval(updateSyllables, 1);
+
+            console.log("Phrase Start: " + phraseNum + ". Current time: "+ elemTime + ", time at phrase start; " + lyricTime);
+            phraseNum++;
+        }
+    }
+}
+
+function updateSyllables() {
+    if (playing) {
+        if (syllableNum === syllables.length) {
+            clearInterval(syllableId);
+            console.log("cleared syllable interval");
+            return;
+        }
+
+        var elemTime = HTMLMusicElem.currentTime.toFixed(2);
+        var syllableTime = lyricTimes2DArray[phraseNum - 1][syllableNum].toFixed(2);
+
+        if (elemTime === syllableTime) {
+            syllables[syllableNum].style.color = "blue";
+
+            console.log("Syllable: " + syllableNum + ". currentTime: " + elemTime + ", time at syllable: " + syllableTime);
+            syllableNum++;
+        }
+    }
+}
+/*
 function phraseTiming() {
     var randomId = setTimeout(function () {
         if (indexer <= lyricTimes2DArray.length) {
@@ -91,6 +169,7 @@ function phraseTiming() {
                 syllables = phrases[indexer].children;
 
                 console.log(syllables);
+                console.log(syllables[0]);
 
                 //syllableTiming(syllables.length, 0, 0);
 
@@ -130,7 +209,7 @@ function syllableTiming(index, counter, time) {
             }
         }, syllableTime);
     }
-}
+}*/
 
 // Create all HTML elements for the song
 function createLyricPreview(eventsPhraseArray) {
@@ -247,7 +326,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
             oldBPMTick = currentBPMTick;
             oldTPS = currentTPS;
 
-            console.log("BPM event: " + combinedArray[i] + ", time: " + currentBPMTime);
+    //        console.log("BPM event: " + combinedArray[i] + ", time: " + currentBPMTime);
 
         } else if (combinedArray[i].includes(" = E ")) { // lyric event found
 
@@ -262,12 +341,16 @@ function combineArrays(eventsPhraseArray, chartSync) {
                 lyricEv: lyricEvent
             });
 
-            console.log("Lyric event: " + combinedArray[i] + ", time: " + timeSeconds);
+    //        console.log("Lyric event: " + combinedArray[i] + ", time: " + timeSeconds);
         }
 
         oldBPMTick = currentBPMTick;
     }
-
+/*
+    for (var i = 0; i < tempLyricTimes.length; i++) {
+        console.log(tempLyricTimes[i].time);
+    }
+*/
     var tempBefore = 0;
     var tempFirstEventInPhrase = 0;
 
@@ -277,7 +360,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
         for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 
             var current = tempLyricTimes.splice(0, 1);
-            var difference;
+/*            var difference;
 
             if (j == 0) {
                 difference = current[0].time - tempFirstEventInPhrase;
@@ -288,8 +371,9 @@ function combineArrays(eventsPhraseArray, chartSync) {
                 tempBefore = current[0].time;
             }
 
-            tempArr[j] = difference;
-            //tempArr[j] = tempLyrcTimes.splice(0, 1);
+            tempArr[j] = difference;*/
+
+            tempArr[j] = current[0].time;
         }
 
         lyricTimes2DArray.push(tempArr);
@@ -305,7 +389,7 @@ module.exports = {music}
 /*
 lyricTimes2DArray = [];
 
-var tempLyrcTimes = [];
+var tempLyricTimes = [];
 
 var oldBPMTick = 0;
 
@@ -343,7 +427,7 @@ for (var i = 0; i < combinedArray.length; i++) {
 
         console.log("Adding to array: " + timeSec + ", " + syllable);
 
-        tempLyrcTimes.push({
+        tempLyricTimes.push({
             time: timeSec,
             show: combinedArray[i].toString()
         });
@@ -358,7 +442,7 @@ for (var i = 0; i < eventsPhraseArray.length; i++) {
 
     for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 
-        var current = tempLyrcTimes.splice(0, 1);
+        var current = tempLyricTimes.splice(0, 1);
         var difference;
 
         if (j == 0) {
@@ -371,7 +455,7 @@ for (var i = 0; i < eventsPhraseArray.length; i++) {
         }
 
         tempArr[j] = difference;
-        //tempArr[j] = tempLyrcTimes.splice(0, 1);
+        //tempArr[j] = tempLyricTimes.splice(0, 1);
     }
 
     lyricTimes2DArray.push(tempArr);

@@ -43,16 +43,6 @@ body {
     color: green;
 }
 
-.backupLyric1 span {
-    font-size: 15px;
-    color: green;
-}
-
-.backupLyric2 span {
-    font-size: 10px;
-    color: blue;
-}
-
 .about {
     font-size: xx-small;
     color: red;

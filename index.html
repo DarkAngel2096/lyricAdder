@@ -60,6 +60,7 @@
                 <br>
 
                 <button type="button" onclick="playMusic()">Play / Pause music</button>
+                <button type="button" onclick="resetSong()">Reset from start</button>
                 <br>
 
                 <span id="timings1"></span>
@@ -138,7 +139,8 @@
                 $("#" + target).toggleClass("hidden");
             }
         });
-    </script><script>
+    </script>
+    <script>
 	document.addEventListener("keydown", function (e) {
 		if (e.which === 123) {
 			require('electron').remote.getCurrentWindow().toggleDevTools();
