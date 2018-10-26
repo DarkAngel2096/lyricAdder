@@ -70,6 +70,7 @@ function writePath() {
             console.log(err);
         });
     }
+    songStuffs.setSongFile();
     changeFields();
 }
 
@@ -283,12 +284,21 @@ function readAndModifyEvents() {
     var startCount = 0;
 
     for (var i = 0; i < tempEventArray.length; i++) {
-        if (tempPhraseStartTicks[startCount] == tempEventArray[i].split("=")[0].trim() && !tempEventArray[i].includes("phrase_start")) {
+
+        var tempStartTick = Number(tempPhraseStartTicks[startCount]);
+        var tempEventTick = Number(tempEventArray[i].split("=")[0].trim());
+
+        //console.log("temp tick: iterator: " + startCount+ ", " + tempStartTick + ", temp array: iterator: " + i + ", " + tempEventTick);
+
+        if (tempStartTick == tempEventTick && !tempEventArray[i].includes("phrase_start")) {
             //console.log("Same tick found between: " + tempEventArray[i] + " and " + tempEventArray[i + 1] + " on phrase: " + (startCount + 1));
 
             var temp = tempEventArray.splice(i + 1, 1);
             tempEventArray.splice(i, 0, temp.toString());
 
+            startCount++;
+        } else if (tempStartTick < tempEventTick && !tempEventArray[i].includes("phrase_start") && !tempEventArray[i].includes("phrase_end")) {
+            //console.log(tempStartTick + ", " + tempEventTick);
             startCount++;
         }
     }
@@ -467,6 +477,8 @@ function testLyricEventsAndSyllables() {
 // Get the lyric events that are filled in from the .chart file
 function getLyricsFromChart() {
     var lyricsPerPhrase = [];
+
+    //console.log(eventsPhraseArray);
 
     if (eventsPhraseArray.length == 0) {
         customErrorMessage(true, "notice", "No lyric events found form the chart");

@@ -4,13 +4,12 @@ var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "ut
 
 // HTML Element building
 var HTMLMusicElem = document.getElementById("testMusic");
-console.log(config.pathToChartFile.replace("notes.chart", "song.ogg"));
-HTMLMusicElem.src = config.pathToChartFile.replace("notes.chart", "song.ogg");
 
 var HTMLtime1 = document.getElementById("timings1");
 var HTMLtime2 = document.getElementById("timings2");
 
 var HTMLMainLyricDiv = document.getElementById("mainLyrics");
+var HTMLPhraseDropDown = document.getElementById("phraseDropDown");
 
 // Global variables used
 var playing = false;
@@ -35,6 +34,8 @@ var syllableId;
 
 // Main method doing all the thigs needed
 function music(eventsPhraseArray, chartSync, lyricsInputArray) {
+    makeDropDown(eventsPhraseArray);
+
     if (playing) {
         HTMLMusicElem.pause();
         playing = false;
@@ -58,6 +59,29 @@ function music(eventsPhraseArray, chartSync, lyricsInputArray) {
     console.log(HTMLMusicElem.currentTime);
 }
 
+// function to get the path to the song file
+function setSongFile() {
+    var tempPath = config.pathToChartFile;
+
+    console.log(tempPath);
+
+    var filePath = tempPath.slice(0, tempPath.lastIndexOf("\\"));
+
+    console.log(filePath);
+
+    fs.readdir(filePath, function(err, items) {
+        if (err) {
+            console.log("problems: " + err);
+            return;
+        }
+
+        for (var i = 0; i < items.length; i++) {
+            console.log(items[i]);
+        }
+    });
+    //HTMLMusicElem.src =
+}
+
 // Testing methods on how to update things
 function updateTime() {
     var intervalID = setInterval(update, 1);
@@ -67,11 +91,119 @@ function update() {
     HTMLtime1.innerHTML = HTMLMusicElem.currentTime;
 }
 
+// methods for seeking through the song
+function makeDropDown(eventsPhraseArray) {
+    var tempArr = eventsPhraseArray.slice();
+
+    for (var i = 0; i < tempArr.length; i++) {
+        var tempPhrase = document.createElement("option");
+        tempPhrase.text += (i + 1) + ":\xA0"
+
+        for (var j = 0; j < tempArr[i].length; j++) {
+            var syllable = tempArr[i][j].split(" = E \"lyric")[1].trim().slice(0, -1);
+
+            if (syllable.endsWith("-")) {
+                syllable = syllable.replace("-" , "");
+            } else if (syllable.endsWith("=")) {
+                syllable = syllable.replace("=", "-")
+            } else if (j != tempArr[i].length - 1){
+                syllable += "\xA0";
+            }
+
+            tempPhrase.text += syllable;
+        }
+
+        if (HTMLPhraseDropDown.options[i] != undefined) {
+            if (HTMLPhraseDropDown.options[i].text == tempPhrase.text) { // if the text in both are the same do nothing
+                //console.log("equals, do nothing");
+            } else { // if the texts are not the same, update:
+                HTMLPhraseDropDown.options[i].text = tempPhrase.text;
+            }
+        } else if (HTMLPhraseDropDown.options[i] == undefined) { //if the option in this index is undefined add a new one
+            HTMLPhraseDropDown.add(tempPhrase)
+        }
+    }
+}
+
+//Dropdown onchange
+HTMLPhraseDropDown.addEventListener("change", myTempFunction);
+
+function myTempFunction() {
+    var dropdownSelect = HTMLPhraseDropDown.selectedIndex;
+    console.log(dropdownSelect);
+
+    if (!playing) {
+        phraseNum = dropdownSelect;
+
+        if ((lyricTimes2DArray[phraseNum][0] - 1) >= 0) {
+            HTMLMusicElem.currentTime = lyricTimes2DArray[phraseNum][0] -  1;
+        } else {
+            HTMLMusicElem.currentTime = 0;
+        }
+
+        console.log("changing phrase to: " + phraseNum + ", and time to: " + HTMLMusicElem.currentTime);
+    }
+}
+
+/*
+//HTMLMusicElem.addEventListener("seeking", pauseTimers);
+HTMLMusicElem.addEventListener("seeked", newTimers);
+
+function pauseTimers() {
+    HTMLMusicElem.pause();
+
+    playing = false;
+
+    console.log("paused when started seeking");
+}
+
+function newTimers() {
+    console.log("seeked, get new placement: " + HTMLMusicElem.currentTime);
+
+    if (lyricTimes2DArray === undefined) {
+        combineArrays(eventsPhraseArray, chartSync);
+        createLyricPreview(eventsPhraseArray);
+    }
+
+    for (var i = 0; i < phrases.length; i++) {
+        for (var j = 0; j < phrases[i].childElementCount; j++) {
+            phrases[i].children[j].style.color = null;
+        }
+        phrases[i].style.color = "green";
+        phrases[i].style.fontSize = "medium";
+        phrases[i].style.display = "none";
+    }
+
+    var newTime = HTMLMusicElem.currentTime;
+
+    var closestPhrase = 0;
+    var closestSyllable = 0;
+
+    for (var i = 0; i < lyricTimes2DArray.length; i++) {
+        if (newTime < lyricTimes2DArray[i][0] && newTime > closestPhrase) {
+            closestPhrase = newTime;
+            phraseNum = i;
+            console.log("phraseNum changed to: " + i);
+        }
+    }
+
+    for (var i = 0; i < lyricTimes2DArray[phraseNum].length; i++) {
+        if (newTime < lyricTimes2DArray[phraseNum][i] && newTime > closestSyllable) {
+            closestSyllable = newTime;
+            syllableNum = i;
+            console.log("syllable: " + i);
+        }
+    }
+
+    updateLyricPreview();
+    updateTime();
+}*/
+
 // Update lyric preview
 function updateLyricPreview() {
     phrases = HTMLMainLyricDiv.children;
-    console.log(phrases[0]);
-    console.log(HTMLMainLyricDiv.childElementCount);
+    //console.log(phrases[0]);
+    //console.log(HTMLMainLyricDiv.childElementCount);
 
     if (phraseNum == undefined) {
         phraseNum = 0;
@@ -84,7 +216,7 @@ function updatePreview() {
     if (playing) {
         if (phraseNum === phrases.length) {
             clearInterval(phraseId);
-            console.log("cleared phrase intervall");
+            //console.log("cleared phrase intervall");
             return;
         }
 
@@ -119,11 +251,11 @@ function updatePreview() {
 
             syllableNum = 1;
 
-            console.log(syllables);
+            //console.log(syllables);
 
             syllableId = setInterval(updateSyllables, 1);
 
-            console.log("Phrase Start: " + phraseNum + ". Current time: "+ elemTime + ", time at phrase start; " + lyricTime);
+            //console.log("Phrase Start: " + phraseNum + ". Current time: "+ elemTime + ", time at phrase start; " + lyricTime);
             phraseNum++;
         }
     }
@@ -133,7 +265,7 @@ function updateSyllables() {
     if (playing) {
         if (syllableNum === syllables.length) {
             clearInterval(syllableId);
-            console.log("cleared syllable interval");
+            //console.log("cleared syllable interval");
             return;
         }
 
@@ -143,7 +275,7 @@ function updateSyllables() {
         if (elemTime === syllableTime) {
             syllables[syllableNum].style.color = "blue";
 
-            console.log("Syllable: " + syllableNum + ". currentTime: " + elemTime + ", time at syllable: " + syllableTime);
+            //console.log("Syllable: " + syllableNum + ". currentTime: " + elemTime + ", time at syllable: " + syllableTime);
             syllableNum++;
         }
     }
@@ -267,8 +399,8 @@ function combineArrays(eventsPhraseArray, chartSync) {
         }
     }
 
-    console.log(tempSyncArray.length);
-    console.log(tempLyricsArray.length);
+    //console.log(tempSyncArray.length);
+    //console.log(tempLyricsArray.length);
 
     while (tempSyncArray.length != 0 && tempLyricsArray.length != 0) {
         var tempLyrics = Number(tempLyricsArray[0].split(" = E \"lyric ")[0].trim());
@@ -295,7 +427,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
         }
     }
 
-    console.log(combinedArray);
+    //console.log(combinedArray);
 
     lyricTimes2DArray = [];
 
@@ -379,11 +511,11 @@ function combineArrays(eventsPhraseArray, chartSync) {
         lyricTimes2DArray.push(tempArr);
     }
 
-    console.log(lyricTimes2DArray);
+//    console.log(lyricTimes2DArray);
 }
 
 // Export main module from here
-module.exports = {music}
+module.exports = {music, setSongFile}
 
 
 /*
