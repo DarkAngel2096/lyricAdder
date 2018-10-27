@@ -27,6 +27,11 @@
                     </a>
                 </li>
                 <li>
+                    <a class="sideButton" name="lyricsPreviewPage" href="#">
+                        <i class="far fa-file-audio"></i> Lyric Preview
+                    </a>
+                </li>
+                <li>
                     <a class="sideButton" name="settingsPage" href="#">
                         <i class="fas fa-cog"></i> Settings
                     </a>
@@ -41,6 +46,8 @@
             </div>
         </div>
         <div id="page-content-wrapper" class="">
+
+            <!--Start Page-->
             <div id="startPage" class="pane">
                 <h1>Welcome to the Lyric Adder</h1>
                 <h5>A simple program created by DarkAngel2096</h5>
@@ -48,34 +55,10 @@
                 <p>This program will make the process of adding lyrics into a .chart (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into empty lyric events</p>
                 <p>No more selecting the lyric textbox in Moonscraper and remove the text "lyric " from it (by complete mistake of course...) or messing up the .chart file itself in a text editor</p>
                 <p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
-                <input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>
+                <!--<input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>-->
             </div>
-            <div id="settingsPage" class="pane hidden">
-                <h1>Settings</h1>
-                <hr>
-                <p>some random page for random testings</p>
-                <audio controls id="testMusic">
-                    <!--<source id="oggTrack" type="audio/ogg">-->
-                </audio>
-                <br>
 
-                <button type="button" onclick="playMusic()">Play / Pause music</button>
-                <button type="button" onclick="resetSong()">Reset from start</button>
-                <br>
-
-                <select id="phraseDropDown">
-                </select>
-                <br>
-
-                <span id="timings1"></span>
-                <span id="timings2"></span>
-                <br>
-
-                <div id="mainLyrics" class="mainLyrics">
-
-                </div>
-
-            </div>
+            <!--Lyrics Input Page-->
             <div id="lyricsInputPage" class="pane hidden">
                 <h1>Input the lyrics</h1>
                 <hr>
@@ -115,6 +98,46 @@
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
                 <button name="restoreButton" type="button" onclick="restoreFromConfig()">Restore lyrics</button>
+            </div>
+
+            <!--Lyrics Preview Page-->
+            <div id="lyricsPreviewPage" class="pane hidden">
+                <h1>Preview lyrics from a chart file</h1>
+                <p>This shows the lyrics from the CHART file, not from the input window</p>
+                <hr>
+
+                <h3>Some info of this page</h3>
+                <p>You'll have to have a .chart file selected in "Lyric Input" and either have that one newly written or read the lyrics from it to be up to date</p>
+                <p>Scrubbing through the song with the timeline below will break things, as will playing the song NOT using the "Play / pause preview" button, changing the volume works.</p>
+                <p>Play and pause the song to have the dropdown "build" itself to be able to select the phrase you want to start from, will NOT work unless the song is paused when selecting the phrase</p>
+                <hr>
+
+                <audio controls id="testMusic">
+                    <!--<source id="oggTrack" type="audio/ogg">-->
+                </audio>
+                <br>
+
+                <button type="button" onclick="playMusic()">Play / Pause preview</button>
+                <button type="button" onclick="resetSong()">Reset from start</button>
+                <br>
+
+                <span id="timings1"></span>
+                <br>
+
+                <select id="phraseDropDown">
+                </select>
+                <br>
+
+                <div id="mainLyrics" class="mainLyrics">
+                </div>
+            </div>
+
+            <!--Settings Page-->
+            <div id="settingsPage" class="pane hidden">
+                <h1>Settings</h1>
+                <p>Futures settings stuff will be happening here....</p>
+                <hr>
+
             </div>
         </div>
     </div>

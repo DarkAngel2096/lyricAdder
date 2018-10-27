@@ -70,8 +70,11 @@ function writePath() {
             console.log(err);
         });
     }
-    songStuffs.setSongFile();
+
     changeFields();
+    setTimeout(function () {
+        songStuffs.setSongFile();
+    }, 0);
 }
 
 // Writes the lyric input from the text field once the field is not empty and is unfocused
@@ -94,6 +97,10 @@ function restoreFromConfig() {
 // For audio play testing purposes
 function playMusic() {
     songStuffs.music(eventsPhraseArray, chartSync, lyricsInputArray);
+}
+
+function resetSong() {
+    songStuffs.resetToStart();
 }
 
 // Button to show the {phrase, event count, syllable count} HTML element

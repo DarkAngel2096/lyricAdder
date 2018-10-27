@@ -6,7 +6,6 @@ var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "ut
 var HTMLMusicElem = document.getElementById("testMusic");
 
 var HTMLtime1 = document.getElementById("timings1");
-var HTMLtime2 = document.getElementById("timings2");
 
 var HTMLMainLyricDiv = document.getElementById("mainLyrics");
 var HTMLPhraseDropDown = document.getElementById("phraseDropDown");
@@ -55,31 +54,60 @@ function music(eventsPhraseArray, chartSync, lyricsInputArray) {
     HTMLMusicElem.onended = function () {
         playing = false;
     };
-    console.log(HTMLMusicElem.duration);
-    console.log(HTMLMusicElem.currentTime);
+    //console.log(HTMLMusicElem.duration);
+    //console.log(HTMLMusicElem.currentTime);
+}
+
+// reset to start
+function resetToStart() {
+    HTMLMusicElem.currentTime = 0;
+    phraseNum = 0;
+    syllableNum = 0;
 }
 
 // function to get the path to the song file
 function setSongFile() {
+    playing = false;
+    HTMLMusicElem.pause();
+
+    HTMLMusicElem.currentTime = 0;
+    phraseNum = 0;
+    syllableNum = 0;
+
+    clearInterval(phraseId);
+    clearInterval(syllableId);
+
+
+    config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
+
     var tempPath = config.pathToChartFile;
-
-    console.log(tempPath);
-
     var filePath = tempPath.slice(0, tempPath.lastIndexOf("\\"));
 
-    console.log(filePath);
+    //console.log(tempPath);
+    //console.log(filePath);
 
-    fs.readdir(filePath, function(err, items) {
+    /*fs.readdir(filePath, function(err, items) {
         if (err) {
             console.log("problems: " + err);
             return;
         }
+    });*/
 
-        for (var i = 0; i < items.length; i++) {
-            console.log(items[i]);
+    var items = fs.readdirSync(filePath);
+    //console.log(items);
+
+    for (var i = 0; i < items.length; i++) {
+        //console.log(items[i]);
+
+        if (items[i] == "song.ogg") {
+            HTMLMusicElem.src = filePath + "\\song.ogg";
+            HTMLMusicElem.load();
+        } else if (items[i].endsWith(".ogg")) {
+            HTMLMusicElem.src = filePath + "\\" + items[i];
+            HTMLMusicElem.load();
         }
-    });
-    //HTMLMusicElem.src =
+    }
+    //console.log(HTMLMusicElem.src);
 }
 
 // Testing methods on how to update things
@@ -130,10 +158,11 @@ HTMLPhraseDropDown.addEventListener("change", myTempFunction);
 
 function myTempFunction() {
     var dropdownSelect = HTMLPhraseDropDown.selectedIndex;
-    console.log(dropdownSelect);
+    //console.log(dropdownSelect);
 
     if (!playing) {
         phraseNum = dropdownSelect;
+        syllableNum = 0;
 
         if ((lyricTimes2DArray[phraseNum][0] - 1) >= 0) {
             HTMLMusicElem.currentTime = lyricTimes2DArray[phraseNum][0] -  1;
@@ -141,63 +170,9 @@ function myTempFunction() {
             HTMLMusicElem.currentTime = 0;
         }
 
-        console.log("changing phrase to: " + phraseNum + ", and time to: " + HTMLMusicElem.currentTime);
+        //console.log("changing phrase to: " + phraseNum + ", and time to: " + HTMLMusicElem.currentTime);
     }
 }
-
-/*
-//HTMLMusicElem.addEventListener("seeking", pauseTimers);
-HTMLMusicElem.addEventListener("seeked", newTimers);
-
-function pauseTimers() {
-    HTMLMusicElem.pause();
-
-    playing = false;
-
-    console.log("paused when started seeking");
-}
-
-function newTimers() {
-    console.log("seeked, get new placement: " + HTMLMusicElem.currentTime);
-
-    if (lyricTimes2DArray === undefined) {
-        combineArrays(eventsPhraseArray, chartSync);
-        createLyricPreview(eventsPhraseArray);
-    }
-
-    for (var i = 0; i < phrases.length; i++) {
-        for (var j = 0; j < phrases[i].childElementCount; j++) {
-            phrases[i].children[j].style.color = null;
-        }
-        phrases[i].style.color = "green";
-        phrases[i].style.fontSize = "medium";
-        phrases[i].style.display = "none";
-    }
-
-    var newTime = HTMLMusicElem.currentTime;
-
-    var closestPhrase = 0;
-    var closestSyllable = 0;
-
-    for (var i = 0; i < lyricTimes2DArray.length; i++) {
-        if (newTime < lyricTimes2DArray[i][0] && newTime > closestPhrase) {
-            closestPhrase = newTime;
-            phraseNum = i;
-            console.log("phraseNum changed to: " + i);
-        }
-    }
-
-    for (var i = 0; i < lyricTimes2DArray[phraseNum].length; i++) {
-        if (newTime < lyricTimes2DArray[phraseNum][i] && newTime > closestSyllable) {
-            closestSyllable = newTime;
-            syllableNum = i;
-            console.log("syllable: " + i);
-        }
-    }
-
-    updateLyricPreview();
-    updateTime();
-}*/
 
 // Update lyric preview
 function updateLyricPreview() {
@@ -280,68 +255,6 @@ function updateSyllables() {
         }
     }
 }
-/*
-function phraseTiming() {
-    var randomId = setTimeout(function () {
-        if (indexer <= lyricTimes2DArray.length) {
-            if (playing) {
-                timing = Math.round(lyricTimes2DArray[indexer + 1][0] * 1000 );
-                console.log(indexer);
-                console.log(timing);
-                console.log(lyricTimes2DArray[indexer + 1][0] * 1000);
-                if (indexer > 0) {
-                    phrases[indexer - 1].style.display = "none";
-                }
-
-                phrases[indexer].style.display = "block";
-                phrases[indexer].style.color = "red";
-                phrases[indexer].style.fontSize = "x-large";
-
-                syllables = [];
-                syllables = phrases[indexer].children;
-
-                console.log(syllables);
-                console.log(syllables[0]);
-
-                //syllableTiming(syllables.length, 0, 0);
-
-                if (indexer < HTMLMainLyricDiv.childElementCount - 2) {
-                    phrases[indexer + 1].style.display = "block";
-                }
-                if (indexer < HTMLMainLyricDiv.childElementCount - 3) {
-                    phrases[indexer + 2].style.display = "block";
-                }
-
-                indexer++;
-                phraseTiming();
-            }
-        }
-    }, timing);
-}
-
-
-function syllableTiming(index, counter, time) {
-
-    var indexNum = index;
-    var syllableTime = time;
-    var syllableCount = counter;
-
-    console.log("(indexer: " + indexer + ", syllable count: " + syllableCount + ") index: " + index + ", counter: " + counter + ", timing: " + syllableTime + ", syllable: " + syllables[syllableCount].innerHTML);
-
-    if (syllableCount < indexNum) {
-        var randomId = setTimeout( function () {
-            if (playing) {
-                syllables[syllableCount].style.color = "blue";
-
-                //if (syllableCount != 0) {
-                    syllableTime = Math.round(lyricTimes2DArray[indexer][syllableCount] * 1000);
-                //}
-                syllableCount++;
-                syllableTiming(indexNum, syllableCount, syllableTime);
-            }
-        }, syllableTime);
-    }
-}*/
 
 // Create all HTML elements for the song
 function createLyricPreview(eventsPhraseArray) {
@@ -515,83 +428,4 @@ function combineArrays(eventsPhraseArray, chartSync) {
 }
 
 // Export main module from here
-module.exports = {music, setSongFile}
-
-
-/*
-lyricTimes2DArray = [];
-
-var tempLyricTimes = [];
-
-var oldBPMTick = 0;
-
-var currentBPM;
-var currentBPMTick;
-var currentBPMTime = 0;
-var currentTPS;
-
-for (var i = 0; i < combinedArray.length; i++) {
-    //console.log(combinedArray[i]);
-    if (combinedArray[i].includes(" = B ")) {
-        // TPS calc = ((192 / BPM) / 60)
-
-        currentBPM = combinedArray[i].slice();
-        currentBPMTick = currentBPM.split(" = B ")[0].trim()
-
-        currentTPS = ((192 * (currentBPM.split(" = B ")[1].trim() / Math.pow(10, 3))) / 60);
-
-        if (oldBPMTick != undefined) {
-            currentBPMTime = currentBPMTime + (currentBPMTick - oldBPMTick) / currentTPS;
-        }
-
-        oldBPMTick = currentBPMTick;
-
-        console.log("BPM Marker: " + currentBPM + ", current TPS: " + currentTPS + ", current time: " + currentBPMTime + ", current tick: " + currentBPMTick + ", old tick: " + oldBPMTick);
-    } else if (combinedArray[i].includes(" = E ")) {
-        var timeSec;
-
-        var tempLyricSplit = combinedArray[i].slice().split(" = E \"lyric ");
-
-        var lyricTick = tempLyricSplit[0].trim();
-        var syllable = tempLyricSplit[1].trim();
-
-        timeSec = currentBPMTime + (lyricTick - currentBPMTick) / currentTPS;
-
-        console.log("Adding to array: " + timeSec + ", " + syllable);
-
-        tempLyricTimes.push({
-            time: timeSec,
-            show: combinedArray[i].toString()
-        });
-    }
-}
-
-var tempBefore = 0;
-var tempFirstEventInPhrase = 0;
-
-for (var i = 0; i < eventsPhraseArray.length; i++) {
-    var tempArr = [];
-
-    for (var j = 0; j < eventsPhraseArray[i].length; j++) {
-
-        var current = tempLyricTimes.splice(0, 1);
-        var difference;
-
-        if (j == 0) {
-            difference = current[0].time - tempFirstEventInPhrase;
-            tempFirstEventInPhrase = current[0].time;
-            tempBefore = current[0].time;
-        } else {
-            difference = current[0].time - tempBefore;
-            tempBefore = current[0].time;
-        }
-
-        tempArr[j] = difference;
-        //tempArr[j] = tempLyricTimes.splice(0, 1);
-    }
-
-    lyricTimes2DArray.push(tempArr);
-}
-
-console.log(lyricTimes2DArray);
-*/
+module.exports = {music, setSongFile, resetToStart}
