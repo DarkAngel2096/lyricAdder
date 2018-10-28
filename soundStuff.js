@@ -102,7 +102,7 @@ function setSongFile() {
         if (items[i] == "song.ogg") {
             HTMLMusicElem.src = filePath + "\\song.ogg";
             HTMLMusicElem.load();
-        } else if (items[i].endsWith(".ogg")) {
+        } else if (items[i].endsWith(".ogg") || items[i].endsWith(".mp3")) {
             HTMLMusicElem.src = filePath + "\\" + items[i];
             HTMLMusicElem.load();
         }
