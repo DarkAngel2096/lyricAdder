@@ -32,6 +32,11 @@
                     </a>
                 </li>
                 <li>
+                    <a class="sideButton" name="difficultyPage" href="#">
+                        <i class ="fas fa-less-than"></i> Difficulties
+                    </a>
+                </li>
+                <li>
                     <a class="sideButton" name="settingsPage" href="#">
                         <i class="fas fa-cog"></i> Settings
                     </a>
@@ -97,7 +102,7 @@
                 <br>
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
-                <button name="restoreButton" type="button" onclick="restoreFromConfig()">Restore lyrics</button>
+                <button type="button" onclick="restoreFromConfig()">Restore lyrics</button>
             </div>
 
             <!--Lyrics Preview Page-->
@@ -132,11 +137,44 @@
                 </div>
             </div>
 
+            <!--Difficulty reducer-->
+            <div id="difficultyPage" class="pane hidden">
+                <h1>Difficulty reducer testing</h1>
+                <p>Highly WIP and will break</p>
+                <hr>
+
+                <button type="button" onclick="findInstrumentsInUse()">Find Instruments used</button>
+
+
+                <div id="generateStuff" class="pane hidden">
+                    <div id="difficultyCheckbox">
+                    </div>
+
+                    <p>Press this button to generate the difficulties that are below the one there is as lowest and will create for all instruments</p>
+                    <button type="button" onclick="generateDifficulties()">Generate lower difficulties</button>
+                </div>
+            </div>
+
             <!--Settings Page-->
             <div id="settingsPage" class="pane hidden">
                 <h1>Settings</h1>
                 <p>Futures settings stuff will be happening here....</p>
                 <hr>
+
+                <p>Link to YouTube video</p>
+                <input id="linkArea" type="text" size="50" onchange="testPlayVideo(this.value)"></input>
+                <br>
+
+                <iframe id="testVideos" width="560" height="315" controls></iframe>
+                <hr>
+
+                <p>School Stuff</p>
+                <input id="num1" type="number" placeholder="Input the first number"></input>
+                <input id="num2" type="number" placeholder="Input the second number"></input>
+                <button type="button" onclick="doSchoolMath()">Calculate</button>
+                <br>
+
+                <span id="schoolTextOutput"></span>
 
             </div>
         </div>
@@ -177,6 +215,7 @@
 	});
     </script>
     <script src="./mainScripts.js"></script>
+    <!--<script src="./twitchTests.js"></script>-->
 </body>
 
 </html>

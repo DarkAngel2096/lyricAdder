@@ -17,13 +17,6 @@ var playing = false;
 var combinedArray;
 var lyricTimes2DArray;
 
-// Display stuff
-var indexer = 0;
-var timing = 0;
-
-var phrases;
-var syllables;
-
 // new display variables
 var phraseNum;
 var syllableNum;
@@ -85,13 +78,6 @@ function setSongFile() {
 
     //console.log(tempPath);
     //console.log(filePath);
-
-    /*fs.readdir(filePath, function(err, items) {
-        if (err) {
-            console.log("problems: " + err);
-            return;
-        }
-    });*/
 
     var items = fs.readdirSync(filePath);
     //console.log(items);
@@ -376,9 +362,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
         } else if (combinedArray[i].includes(" = E ")) { // lyric event found
 
             var lyricEvent = combinedArray[i];
-
             var lyricTick = combinedArray[i].split(" = E ")[0].trim();
-
             var timeSeconds = currentBPMTime + ((lyricTick - currentBPMTick) / currentTPS);
 
             tempLyricTimes.push({
@@ -391,11 +375,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
         oldBPMTick = currentBPMTick;
     }
-/*
-    for (var i = 0; i < tempLyricTimes.length; i++) {
-        console.log(tempLyricTimes[i].time);
-    }
-*/
+    
     var tempBefore = 0;
     var tempFirstEventInPhrase = 0;
 
@@ -405,18 +385,6 @@ function combineArrays(eventsPhraseArray, chartSync) {
         for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 
             var current = tempLyricTimes.splice(0, 1);
-/*            var difference;
-
-            if (j == 0) {
-                difference = current[0].time - tempFirstEventInPhrase;
-                tempFirstEventInPhrase = current[0].time;
-                tempBefore = current[0].time;
-            } else {
-                difference = current[0].time - tempBefore;
-                tempBefore = current[0].time;
-            }
-
-            tempArr[j] = difference;*/
 
             tempArr[j] = current[0].time;
         }

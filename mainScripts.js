@@ -3,6 +3,7 @@ const fs = require("fs");
 
 // File requires to other .js files
 var songStuffs = require("./soundStuff.js");
+var difficultyReducer = require("./difficultyReducer.js");
 
 // Other variables needed (or just to make the program run smoother)
 var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
@@ -41,6 +42,8 @@ var eventsAll;
 var eventsPhraseArray;          // 2D array
 var difficulties;
 var modifiedLyricEventArray;    // single dimension for ease of use
+
+var newFullReducedDifficulties;
 
 // Custom error messages on the GUI
 function customErrorMessage(active, messageType, message) {
@@ -103,6 +106,13 @@ function resetSong() {
     songStuffs.resetToStart();
 }
 
+// Difficulty Reducer stuff
+//Difficulties get automatically sent over, these are just for buttons and the checkbox area
+function findInstrumentsInUse() {
+    difficultyReducer.findInstruments();
+}
+
+
 // Button to show the {phrase, event count, syllable count} HTML element
 function showPhrasesAndLyrics() {
     if (toggleForLyricsAndSyllables) {
@@ -154,6 +164,8 @@ function changeFields() {
         var lyricEventCount = readAndModifyEvents();
         var syllableCount = readLyricInput();
         var phrasesAmounts = testLyricEventsAndSyllables();
+
+        difficultyReducer.giveDifficulties(difficulties);
 
         HTMLChartInfoDiv.style.display = "block";
         HTMLWriteButton.style.display = "block";
@@ -211,27 +223,20 @@ function readAndSeparateChartFile() {
                     break;
                 }
                 default: {
-                    /*
-                    if (indicies.length <= 3) {
-                        console.log("At most 3 indicies found, nothing more here to do: " + indicies);
-                        break;
-                    } else {
-                        console.log("More than 3 indicies, continue: " + indicies);
+                    var tempString = fullChart[indicies[i] - 1];
+                    //console.log(tempString);
 
-                        if (i == indicies.length - 1) {
-                            var temp = fullChart.slice(indicies[i] - 1, fullChart.length - 1);
-                            difficulties.push(temp);
-                            console.log("found something: " + i + ", " + (i + 1));
-                            break;
+                    if (tempString.startsWith("[Expert") || tempString.startsWith("[Hard") || tempString.startsWith("[Medium") || tempString.startsWith("[Easy")) {
+                        //console.log("Playable difficulty found: " + tempString + ", add to the end of the difficulty var.");
+                        if (indicies[i + 1] == fullChart.length) {
+                            difficulties.push(fullChart.slice(indicies[i] - 1, indicies[i + 1]));
                         } else {
-                            var temp = fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1);
-                            difficulties.push(temp);
-                            console.log("found more difficulties: " + i + ", " + (i + 1));
-                            break;
+                            difficulties.push(fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1));
                         }
 
-                        break;
-                    }*/
+                    } else {
+                        console.log("Something odd found: " + tempString);
+                    }
                 }
             }
         }
@@ -297,7 +302,7 @@ function readAndModifyEvents() {
 
         //console.log("temp tick: iterator: " + startCount+ ", " + tempStartTick + ", temp array: iterator: " + i + ", " + tempEventTick);
 
-        if (tempStartTick == tempEventTick && !tempEventArray[i].includes("phrase_start")) {
+        if (tempStartTick == tempEventTick && !tempEventArray[i].includes("phrase_start") && tempEventArray[i + 1].includes("phrase_start")) {
             //console.log("Same tick found between: " + tempEventArray[i] + " and " + tempEventArray[i + 1] + " on phrase: " + (startCount + 1));
 
             var temp = tempEventArray.splice(i + 1, 1);
@@ -427,8 +432,8 @@ function readLyricInput() {
 
     for (var i = 0; i < lyricsInputFull.length; i++) {
         if (lyricsInputFull[i] != "") {
-            var tempPhrase = lyricsInputFull[i].replace(/-/g, "- ").trim().split(" ");
             var tempArr = [];
+            var tempPhrase = lyricsInputFull[i].replace(/-/g, "- ").replace(/=/g, "= ").trim().split(" ");
 
             for (var j = 0; j < tempPhrase.length; j++) {
                 if (tempPhrase[j] != "" && tempPhrase[j] != "-") {
@@ -498,7 +503,7 @@ function getLyricsFromChart() {
 
                 temp = temp.substring(0, temp.length - 1);
 
-                if (temp.endsWith("-")) {
+                if (temp.endsWith("-") ||temp.endsWith("=")) {
                     tempString += temp;
                 } else {
                     tempString += temp + " ";
@@ -622,5 +627,62 @@ function overwriteOriginalFile() {
     } catch (err) {
         console.log("Problems writing the chart file: " + err);
         customErrorMessage(true, "error", "Problems occured while writing the chart file, check the console for more info.");
+    }
+}
+
+var HTMLVideoLink = document.getElementById("linkArea");
+var HTMLVideoElem = document.getElementById("testVideos");
+
+//testing stuffs
+function testPlayVideo(value) {
+    var linkID = value.substring(value.lastIndexOf("watch?") + 8, value.length);
+
+    console.log(value);
+    console.log(linkID);
+
+    HTMLVideoElem.src = "https://www.youtube.com/embed/" + linkID + "?rel=0";
+
+    console.log(HTMLVideoElem.src);
+}
+
+
+//School Stuff!!!!
+var schoolHTMLFirstNum = document.getElementById("num1");
+var schoolHTMLSecondNum = document.getElementById("num2");
+
+var schoolHTMLSpan = document.getElementById("schoolTextOutput");
+
+function doSchoolMath() {
+    var firstNum = Number(schoolHTMLFirstNum.value);
+    var secondNum = Number(schoolHTMLSecondNum.value);
+
+    if (firstNum == undefined && firstNum.typeOf != Number) {
+        console.log("first number is undefined or isn't number: " + firstNum);
+    } else if (secondNum == undefined && secondNum.typeOf != Number) {
+        console.log("second number is underfined or isn't number: " + secondNum);
+    } else {
+        var text = "";
+
+        text += "numbers used: " + firstNum + " " + secondNum + "<br>";
+
+        text += "Sum is: " + (firstNum + secondNum) + "<br>";
+
+        var difference = 0;
+        if (firstNum <= secondNum) {
+            difference = secondNum - firstNum;
+        } else {
+            difference = firstNum - secondNum;
+        }
+        text += "Difference is: " + difference + "<br>";
+
+        text += "Multiplication: " + (firstNum * secondNum) + "<br>";
+
+        text += "Division: " + (firstNum / secondNum) + "<br>";
+
+        for (var i = secondNum; i <= firstNum; i++) {
+            text += i + " ";
+        }
+
+        schoolHTMLSpan.innerHTML = text;
     }
 }

@@ -1,11 +1,18 @@
 #ignore config file
 config.json
 
-#ignore old code snippets file
+#ignore old code snippets file and test.js
 oldCodeSnippets.js
+tests.js
+
+#ignore twitchTests for now
+twitchTests.js
 
 #ignore readme
 README.md
 
 #ignore release-builds folder
 release-builds/
+
+#ignore other stuffs folder
+other-stuff/

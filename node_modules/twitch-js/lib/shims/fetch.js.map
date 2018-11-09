@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/shims/fetch.js"],"names":["fetch"],"mappings":";;;;;;AAAA;;kBAEeA,K","file":"fetch.js","sourcesContent":["import 'whatwg-fetch';\n\nexport default fetch;\n"]}
