@@ -70,7 +70,7 @@ function findInstruments() {
 
     createCheckboxes(difficultyInstruments)
 }
-
+/*
 // function to create the checkboxes to read which difficulties to possibly generate
 function createCheckboxes(difficultyInstruments) {
     var HTMLCheckboxDiv = document.getElementById("difficultyCheckbox");
@@ -88,6 +88,6 @@ function createCheckboxes(difficultyInstruments) {
             }
         }
     }
-}
+}*/
 
 module.exports = {giveDifficulties, findInstruments}

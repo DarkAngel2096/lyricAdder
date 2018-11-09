@@ -630,6 +630,23 @@ function overwriteOriginalFile() {
     }
 }
 
+
+
+// temporary function for data gathering
+function gatherChartData() {
+    var folderPathInput = document.getElementById("folderSelect").files[0].path;
+
+    var gatherer = require("./dataGather.js");
+
+    gatherer.mainGather(folderPathInput, config.pathToBackupFolder);
+}
+
+
+
+/*
+
+//Other random stuff
+
 var HTMLVideoLink = document.getElementById("linkArea");
 var HTMLVideoElem = document.getElementById("testVideos");
 
@@ -686,3 +703,4 @@ function doSchoolMath() {
         schoolHTMLSpan.innerHTML = text;
     }
 }
+*/
