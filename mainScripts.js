@@ -639,6 +639,15 @@ function gatherChartData() {
     var gatherer = require("./dataGather.js");
 
     gatherer.mainGather(folderPathInput, config.pathToBackupFolder);
+
+
+}
+
+// Temporary function for data sifting
+function dataSifter() {
+    var sifter = require("./dataSift.js");
+
+    sifter.methodCalls();
 }
 
 

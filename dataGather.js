@@ -11,10 +11,14 @@ var allChartInfoArray;
 
 // main functuion
 function mainGather(pathToSongs, pathToBackup) {
+    var startTime = Date.now()
+
     pathToSongsFolder = pathToSongs;
     pathToBackupFolder = pathToBackup;
 
     gatherChartPaths();
+
+    console.log("Data gathering done in: " + (Date.now() - startTime) + "ms.");
 }
 
 // function to gather paths to all chart files
