@@ -197,13 +197,33 @@ function understandData() {
                     var tapCount = 0;
                     var openCount = 0;
                     var otherCount = 0;
+                    var chordCount = 0;
 
                     var starPowerCount = 0;
 
                     for (var l = 0; l < songArray[i][j][k].length; l++) {
+
+                        var currentNote = songArray[i][j][k][l].trim().split(" ");
+                        var nextNote = songArray[i][j][k][l + 1].trim().split(" ");
+
+                        while (currentNote[0] == nextNote[0]) {
+                            
+
+                            l++;
+                            nextNote = songArray[i][j][k][l + 1].trim().split(" ");
+                        }
+
                         var noteInfo = songArray[i][j][k][l].trim().split(" ");
 
                         if (noteInfo[2] == "N") {
+                        /*    var tempWhile = 0;
+
+                            while (noteInfo[0] == songArray[i][j][k][l + tempWhile].trim().split(" ")[0] && songArray[i][j][k][l + tempWhile].trim().split(" ")[2] == "N") {
+                                l++;
+                                tempWhile++;
+                                chordCount++;
+                            }*/
+
                             switch (noteInfo[3]) {
                                 case "0": greenCount++; break;
                                 case "1": redCount++; break;
@@ -218,7 +238,7 @@ function understandData() {
                         } else if (noteInfo[2] == "S") {
                             starPowerCount++;
                         } else {
-
+                            // do notthing
                         }
 
                         counter++;
@@ -235,6 +255,7 @@ function understandData() {
                         "5. Opens": openCount,
                         "6. Taps": tapCount,
                         "7. Forced": forcedCount,
+                        "8. Chords": chordCount,
                         "SP": starPowerCount,
                         "others": otherCount
                     });
