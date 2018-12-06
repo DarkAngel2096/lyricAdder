@@ -4,6 +4,7 @@ const fs = require("fs");
 // variable creation
 var nameInstruments = [
     "Single",               // Lead guitar
+    "SingleBass",           // Lead bass?
     "DoubleGuitar",         // Second lead guitar?
     "DoubleBass",           // Bass
     "DoubleRythm",          // Rythm
