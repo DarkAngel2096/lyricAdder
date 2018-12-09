@@ -175,7 +175,7 @@ function understandData() {
         //i = 37;
         //console.log(songArray[i]);
 
-        var chartInfo = [];
+        var chartInfoTemp = [];
 
         // event tag loop
         for (var j = 0; j < songArray[i].length; j++) {
@@ -281,9 +281,9 @@ function understandData() {
                     }
 
                     noteCountArr = {
-                        "6. Taps": tapCount,
-                        "7. Forced": forcedCount,
-                        "8. Chords": chordCount
+                        "1. Taps": tapCount,
+                        "2. Forced": forcedCount,
+                        "3. Chords": chordCount
                     };
 
                     otherThingsArr = {
@@ -294,7 +294,7 @@ function understandData() {
                         "other stuff": otherCount
                     };
 
-                    chartInfo.push({
+                    chartInfoTemp.push({
                         "Difficulty": songArray[i][j][k][0].substring(1, songArray[i][j][k][0].length - 1),
                         "0. Greens": greenCount,
                         "1. Reds": redCount,
@@ -302,6 +302,7 @@ function understandData() {
                         "3. Blues": blueCount,
                         "4. Oranges": orangeCount,
                         "5. Opens": openCount,
+                        "6. Total Notes": (greenCount + redCount + yellowCount + blueCount + orangeCount + openCount),
                         "Other note info":  noteCountArr,
                         "Other stuff": otherThingsArr
                     });
@@ -326,9 +327,133 @@ function understandData() {
             }
         }
 
+        var chartInfoPerDiff = [];
+
+        var single = [];
+        var singleBass = [];
+        var doubleGuitar = [];
+        var doubleBass = [];
+        var doubleRythm = [];
+        var drums = [];
+        var keyboards = [];
+        var gHLGuitar = [];
+        var gHLBass = [];
+
+        for (var j = 0; j < chartInfoTemp.length; j++) {
+            console.log(chartInfoTemp[j]);
+
+            if (chartInfoTemp[j]["Difficulty"].includes("Single")) {
+                if (single.length == 0 || single[0]["Difficulty"].includes("Expert")) {
+                    single.push(chartInfoTemp[j]);
+                } else {
+                    single.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("SingleBass")) {
+                if (singleBass.length == 0 || singleBass[0]["Difficulty"].includes("Expert")) {
+                    singleBass.push(chartInfoTemp[j]);
+                } else {
+                    singleBass.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("DoubleGuitar")) {
+                if (doubleGuitar.length == 0 || doubleGuitar[0]["Difficulty"].includes("Expert")) {
+                    doubleGuitar.push(chartInfoTemp[j]);
+                } else {
+                    doubleGuitar.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("DoubleBass")) {
+                if (doubleBass.length == 0 || doubleBass[0]["Difficulty"].includes("Expert")) {
+                    doubleBass.push(chartInfoTemp[j]);
+                } else {
+                    doubleBass.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("DoubleRythm")) {
+                if (doubleRythm.length == 0 || doubleRythm[0]["Difficulty"].includes("Expert")) {
+                    doubleRythm.push(chartInfoTemp[j]);
+                } else {
+                    doubleRythm.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("Drum")) {
+                if (drums.length == 0 || drums[0]["Difficulty"].includes("Expert")) {
+                    drums.push(chartInfoTemp[j]);
+                } else {
+                    drums.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("Keyboard")) {
+                if (keyboards.length == 0 || keyboards[0]["Difficulty"].includes("Expert")) {
+                    keyboards.push(chartInfoTemp[j]);
+                } else {
+                    keyboards.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("GHLGuitar")) {
+                if (gHLGuitar.length == 0 ||gHLGuitar[0]["Difficulty"].includes("Expert")) {
+                    gHLGuitar.push(chartInfoTemp[j]);
+                } else {
+                    gHLGuitar.unshift(chartInfoTemp[j]);
+                }
+            } else if (chartInfoTemp[j]["Difficulty"].includes("GHLBass")) {
+                if (gHLBass.length == 0 || gHLBass[0]["Difficulty"].includes("Expert")) {
+                    gHLBass.push(chartInfoTemp[j]);
+                } else {
+                    gHLBass.unshift(chartInfoTemp[j]);
+                }
+            }
+        }
+
+        if (single.length != 0) {
+            var tempLength = 0;
+
+            for (var k = 0; k < single.length; k++) {
+                tempLength += single[k]["6. Total Notes"];
+            }
+
+            chartInfoPerDiff.push({
+                "Single": single,
+                "Difficulty note info": tempLength
+            });
+        }
+        if (singleBass.length != 0) {
+            chartInfoPerDiff.push({
+                "SingleBass": singleBass
+            });
+        }
+        if (doubleGuitar.length != 0) {
+            chartInfoPerDiff.push({
+                "DoubleGuitar": doubleGuitar
+            });
+        }
+        if (doubleBass.length != 0) {
+            chartInfoPerDiff.push({
+                "DoubleBass": doubleBass
+            });
+        }
+        if (doubleRythm.length != 0) {
+            chartInfoPerDiff.push({
+                "DoubleRythm": doubleRythm
+            });
+        }
+        if (drums.length != 0) {
+            chartInfoPerDiff.push({
+                "Drums": drums
+            });
+        }
+        if (keyboards.length != 0) {
+            chartInfoPerDiff.push({
+                "Keyboards": keyboards
+            });
+        }
+        if (gHLGuitar.length != 0) {
+            chartInfoPerDiff.push({
+                "GHLGuitar": gHLGuitar});
+        }
+        if (gHLBass.length != 0) {
+            chartInfoPerDiff.push({
+                "GHLBass": gHLBass
+            });
+        }
+
         dataArray.push({
             "1. Song Info": logString.substring(11, logString.length),
-            "2. Difficulty info": chartInfo
+            "2. Difficulty info": chartInfoPerDiff
         });
     }
     console.log(dataArray);
