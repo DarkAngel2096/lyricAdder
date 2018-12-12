@@ -5,6 +5,9 @@ const fs = require("fs");
 var songStuffs = require("./soundStuff.js");
 var difficultyReducer = require("./difficultyReducer.js");
 
+// Make $ available to the Electron context
+const $ = require("jquery");
+
 // Other variables needed (or just to make the program run smoother)
 var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "utf8"));
 var lyricsInputFull;
