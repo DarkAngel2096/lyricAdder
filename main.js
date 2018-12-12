@@ -20,7 +20,7 @@ function createWindow () {
     testPaths();
     testVersion();
 
-    //win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     win.on("closed", () => {
         win = null;
@@ -57,7 +57,7 @@ function testVersion() {
             if (err) console.log("Problems with creating config: " + err);
         });
     } else {
-        
+
     }
 }
 

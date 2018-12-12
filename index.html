@@ -16,11 +16,6 @@
                 <li class="sidebar-brand branding">
                     <i class="far fa-closed-captioning"></i> Lyrics
                 </li>
-                <!--<li>
-                    <a class="sideButton" name="chartInfoPage" href="#">
-                        <i class="far fa-file-alt"></i> Chart Info
-                    </a>
-                </li>-->
                 <li>
                     <a class="sideButton" name="lyricsInputPage" href="#">
                         <i class="fas fa-music"></i> Lyric Input
@@ -31,7 +26,7 @@
                         <i class="far fa-file-audio"></i> Lyric Preview
                     </a>
                 </li>
-                <li>
+                <!--<li>
                     <a class="sideButton" name="difficultyPage" href="#">
                         <i class ="fas fa-less-than"></i> Difficulties
                     </a>
@@ -40,7 +35,7 @@
                     <a class="sideButton" name="settingsPage" href="#">
                         <i class="fas fa-cog"></i> Settings
                     </a>
-                </li>
+                </li>-->
             </ul>
             <div class="about">
                 Created by DarkAngel2096
@@ -57,7 +52,7 @@
                 <h1>Welcome to the Lyric Adder</h1>
                 <h5>A simple program created by DarkAngel2096</h5>
                 <hr>
-                <p>This program will make the process of adding lyrics into a .chart (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into empty lyric events</p>
+                <p>This program will make the process of adding lyrics into a .chart file (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into lyric events</p>
                 <p>No more selecting the lyric textbox in Moonscraper and remove the text "lyric " from it (by complete mistake of course...) or messing up the .chart file itself in a text editor</p>
                 <p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
                 <!--<input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>-->
@@ -88,7 +83,7 @@
                     <label for="phrasesAndLyrics">{phrase number, lyric event count - syllable count}:</label>
                     <button type="button" onclick="showPhrasesAndLyrics()">Toggle lyrics and syllables</button>
                     <br>
-                    <span id="phrasesAndLyrics" name="phrasesAndLyrics" class="pane hidden"></span>
+                    <div id="phraseDiv" class="hidden"></div>
                 </div>
                 <span id="noChartFile" class="pane hidden" style="color:red;">No .chart file selected</span>
                 <span id="noLyrcisWritten" class="pane hidden" style="color:red;">No lyrics written in the text box below</span>
@@ -103,21 +98,20 @@
                 <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time the text field is unfocused)</label>
                 <br>
                 <button type="button" onclick="restoreFromConfig()">Restore lyrics</button>
-            </div>
 
+            </div>
             <!--Lyrics Preview Page-->
             <div id="lyricsPreviewPage" class="pane hidden">
                 <h1>Preview lyrics from a chart file</h1>
-                <p>This shows the lyrics from the CHART file, not from the input window</p>
                 <hr>
 
-                <h3>Some info of this page</h3>
+                <h3>Some info of this page (Still WIP, easily breakable)</h3>
+                <p>This shows the lyrics from the CHART file, not from the input window</p>
                 <p>You'll have to have a .chart file selected in "Lyric Input" and either have that one newly written or read the lyrics from it to be up to date</p>
-                <p>Scrubbing through the song with the timeline below will break things, as will playing the song NOT using the "Play / pause preview" button, changing the volume works.</p>
                 <p>Play and pause the song to have the dropdown "build" itself to be able to select the phrase you want to start from, will NOT work unless the song is paused when selecting the phrase</p>
                 <hr>
 
-                <audio controls id="testMusic">
+                <audio id="testMusic">
                     <!--<source id="oggTrack" type="audio/ogg">-->
                 </audio>
                 <br>
@@ -126,15 +120,21 @@
                 <button type="button" onclick="resetSong()">Reset from start</button>
                 <br>
 
-                <span id="timings1"></span>
+                <span id="problems"></span>
+                <br>
+
+                <label for="length">Total song length: </label>
+                <span name="length" id="totalLength"></span>
+
+                <label for="time">Current time: </label>
+                <span name="time" id="timings1"></span>
                 <br>
 
                 <select id="phraseDropDown">
                 </select>
                 <br>
 
-                <div id="mainLyrics" class="mainLyrics">
-                </div>
+                <div id="mainLyrics" class="mainLyrics"></div>
             </div>
 
             <!--Difficulty reducer-->

@@ -5,6 +5,9 @@ var config = JSON.parse(fs.readFileSync("../lyricAdder_backups/config.json", "ut
 // HTML Element building
 var HTMLMusicElem = document.getElementById("testMusic");
 
+var HTMLProblems = document.getElementById("problems");
+
+var HTMLTotalTime = document.getElementById("totalLength");
 var HTMLtime1 = document.getElementById("timings1");
 
 var HTMLMainLyricDiv = document.getElementById("mainLyrics");
@@ -27,6 +30,8 @@ var syllableId;
 // Main method doing all the thigs needed
 function music(eventsPhraseArray, chartSync, lyricsInputArray) {
     makeDropDown(eventsPhraseArray);
+
+    HTMLTotalTime.innerHTML = HTMLMusicElem.duration + "<br/>";
 
     if (playing) {
         HTMLMusicElem.pause();
@@ -147,6 +152,7 @@ function myTempFunction() {
     //console.log(dropdownSelect);
 
     if (!playing) {
+        HTMLProblems.style.display = "none";
         phraseNum = dropdownSelect;
         syllableNum = 0;
 
@@ -157,6 +163,9 @@ function myTempFunction() {
         }
 
         //console.log("changing phrase to: " + phraseNum + ", and time to: " + HTMLMusicElem.currentTime);
+    } else {
+        HTMLProblems.innerHTML = "Pause the song to select the phrase to start from"
+        HTMLProblems.style.display = "block";
     }
 }
 
@@ -375,7 +384,7 @@ function combineArrays(eventsPhraseArray, chartSync) {
 
         oldBPMTick = currentBPMTick;
     }
-    
+
     var tempBefore = 0;
     var tempFirstEventInPhrase = 0;
 

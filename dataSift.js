@@ -399,57 +399,15 @@ function understandData() {
             }
         }
 
-        if (single.length != 0) {
-            var tempLength = 0;
-
-            for (var k = 0; k < single.length; k++) {
-                tempLength += single[k]["6. Total Notes"];
-            }
-
-            chartInfoPerDiff.push({
-                "Single": single,
-                "Difficulty note info": tempLength
-            });
-        }
-        if (singleBass.length != 0) {
-            chartInfoPerDiff.push({
-                "SingleBass": singleBass
-            });
-        }
-        if (doubleGuitar.length != 0) {
-            chartInfoPerDiff.push({
-                "DoubleGuitar": doubleGuitar
-            });
-        }
-        if (doubleBass.length != 0) {
-            chartInfoPerDiff.push({
-                "DoubleBass": doubleBass
-            });
-        }
-        if (doubleRythm.length != 0) {
-            chartInfoPerDiff.push({
-                "DoubleRythm": doubleRythm
-            });
-        }
-        if (drums.length != 0) {
-            chartInfoPerDiff.push({
-                "Drums": drums
-            });
-        }
-        if (keyboards.length != 0) {
-            chartInfoPerDiff.push({
-                "Keyboards": keyboards
-            });
-        }
-        if (gHLGuitar.length != 0) {
-            chartInfoPerDiff.push({
-                "GHLGuitar": gHLGuitar});
-        }
-        if (gHLBass.length != 0) {
-            chartInfoPerDiff.push({
-                "GHLBass": gHLBass
-            });
-        }
+        if (single.length != 0) {chartInfoPerDiff.push(countNotes("Single", single));}
+        if (singleBass.length != 0) {chartInfoPerDiff.push(countNotes("SingleBass", singleBass));}
+        if (doubleGuitar.length != 0) {chartInfoPerDiff.push(countNotes("DoubleGuitar", doubleGuitar));}
+        if (doubleBass.length != 0) {chartInfoPerDiff.push(countNotes("DoubleBass", doubleBass));}
+        if (doubleRythm.length != 0) {chartInfoPerDiff.push(countNotes("DoubleRythm", doubleRythm));}
+        if (drums.length != 0) {chartInfoPerDiff.push(countNotes("Drums", drums));}
+        if (keyboards.length != 0) {chartInfoPerDiff.push(countNotes("Keyboards", keyboards));}
+        if (gHLGuitar.length != 0) {chartInfoPerDiff.push(countNotes("GHLGuitar", gHLGuitar));}
+        if (gHLBass.length != 0) {chartInfoPerDiff.push(countNotes("GHLBass", gHLBass));}
 
         dataArray.push({
             "1. Song Info": logString.substring(11, logString.length),
@@ -477,8 +435,44 @@ function understandData() {
 
 
     console.log("Rows of note placements for difficulties: " + counter);
+
+    try {
+        fs.writeFileSync("../lyricAdder_backups" + "\\dataSifted.json", JSON.stringify(dataArray, null, "\t"), "utf8");
+        console.log("Overwrite done without problems!");
+    } catch (err) {
+        console.log("Problems writing the chart file: " + err);
+    }
 }
 
+function countNotes(inst, instrument) {
+    var expertTotalCount = 0;
+    var hardTotalCount = 0;
+    var mediumTotalCount = 0;
+    var easyTotalCount = 0;
 
+    var totalCount = 0;
+
+    for (var i = 0; i < instrument.length; i++) {
+        switch (instrument[i]["Difficulty"].substring(0, 4)) {
+            case "Expe": expertTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
+            case "Hard": hardTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
+            case "Medi": mediumTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
+            case "Easy": easyTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
+        }
+    }
+
+    var obj = {
+        "Instrument": instrument,
+        "Total Notes": totalCount,
+        "Note count / percentages": {
+            "Expert": expertTotalCount + ", " + (expertTotalCount / expertTotalCount * 100).toFixed(3),
+            "Hard": hardTotalCount + ", " +  (hardTotalCount / expertTotalCount * 100).toFixed(3),
+            "Medium": mediumTotalCount + ", " +  (mediumTotalCount / expertTotalCount * 100).toFixed(3),
+            "Easy": easyTotalCount + ", " +  (easyTotalCount / expertTotalCount * 100).toFixed(3)
+        }
+    }
+
+    return obj;
+}
 
 module.exports = {methodCalls}

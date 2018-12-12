@@ -24,7 +24,7 @@ var HTMLChartName = document.getElementById("chartName");
 var HTMLPhraseCount = document.getElementById("phraseCount");
 var HTMLLyricEventCount = document.getElementById("lyricEventCount");
 var HTMLSyllableCount = document.getElementById("syllableCount");
-var HTMLPhrasesAndLyrics = document.getElementById("phrasesAndLyrics");
+var HTMLPhraseDiv = document.getElementById("phraseDiv");
 
 var HTMLNoChartFile = document.getElementById("noChartFile");
 var HTMLNoLyricsWritten = document.getElementById("noLyrcisWritten");
@@ -116,10 +116,10 @@ function findInstrumentsInUse() {
 // Button to show the {phrase, event count, syllable count} HTML element
 function showPhrasesAndLyrics() {
     if (toggleForLyricsAndSyllables) {
-        HTMLPhrasesAndLyrics.style.display = "none";
+        HTMLPhraseDiv.style.display = "none";
         toggleForLyricsAndSyllables = false;
     } else if (!toggleForLyricsAndSyllables) {
-        HTMLPhrasesAndLyrics.style.display = "block";
+        HTMLPhraseDiv.style.display = "block";
         toggleForLyricsAndSyllables = true;
     }
 }
@@ -163,7 +163,8 @@ function changeFields() {
         var chartName = readSongInfo();
         var lyricEventCount = readAndModifyEvents();
         var syllableCount = readLyricInput();
-        var phrasesAmounts = testLyricEventsAndSyllables();
+
+        testLyricEventsAndSyllables();
 
         difficultyReducer.giveDifficulties(difficulties);
 
@@ -173,7 +174,6 @@ function changeFields() {
         HTMLPhraseCount.innerHTML = eventsPhraseArray.length + " phrases found";
         HTMLLyricEventCount.innerHTML = lyricEventCount + " lyric events found";
         HTMLSyllableCount.innerHTML = syllableCount + " syllables found";
-        HTMLPhrasesAndLyrics.innerHTML = phrasesAmounts;
 
         console.log("it took: " + (Date.now() - startTime) + "ms to do all the things");
     } else if (HTMLChartInfoDiv.style.display != "none") {
@@ -337,84 +337,6 @@ function readAndModifyEvents() {
         }
     }
 
-    //console.log(eventsPhraseArray);
-/*
-    for (var i = tempEventArray.length - 1; i >= 0; i--) {
-        if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
-            tempEventArray.splice(i, 1);
-        }
-    }
-
-    var tempPhraseStarts = [];
-    var tempPhraseEnds = [];
-
-    for (var i = 0; i < tempEventArray.length; i++) {
-        if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
-            tempPhraseStarts.push(i);
-        } else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
-            tempPhraseEnds.push(i);
-        }
-    }
-
-    console.log(tempPhraseStarts);
-    console.log(tempPhraseEnds);
-
-    var endEventsUsed = 0;
-
-    for (var i = 0; i < tempPhraseStarts.length; i++) {
-
-        console.log(tempEventArray[tempPhraseStarts[i] - 1]);
-        console.log(tempEventArray[tempPhraseStarts[i]]);
-
-        console.log();
-
-        //console.log(tempEventArray[tempPhraseStarts[i] - 1].split("=")[0].trim());
-        //console.log(tempEventArray[tempPhraseStarts[i + 1] - 1].split("=")[0].trim());
-
-
-        if (tempPhraseStarts[i + 1] > tempPhraseEnds[endEventsUsed] || tempPhraseStarts[i + 1] == undefined) {
-            console.log("inside the part to take ends out");
-
-
-            //if (tempEventArray[tempPhraseStarts[i] - 1])
-
-            endEventsUsed++;
-        } else {
-            console.log("inside part to take to the next start");
-
-
-        }
-
-
-
-
-
-        if (tempPhraseStarts[i + 1] > tempPhraseEnds[endEventsUsed] || tempPhraseStarts[i + 1] == undefined) {
-            //console.log("inside the part to take ends out");
-            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseEnds[endEventsUsed]));
-            endEventsUsed++;
-        } else {
-            //console.log("inside part to take to the next start");
-            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseStarts[i + 1]));
-        }
-    }
-
-    //console.log(eventsPhraseArray);
-
-
-
-    if (tempPhraseStarts.length != tempPhraseEnds.length) {
-        if (tempPhraseStarts.length < tempPhraseEnds.length) {
-            customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_starts missing)");
-        } else if (tempPhraseStarts.length > tempPhraseEnds.length){
-            customErrorMessage(true, "error" ,"The phrase event counts are different causing the counts above not to be correct (phrase_ends missing)");
-        }
-    } else if (tempPhraseStarts.length == tempPhraseEnds.length) {
-        for (var i = 0; i < tempPhraseStarts.length; i++) {
-            eventsPhraseArray.push(tempEventArray.slice(tempPhraseStarts[i] + 1, tempPhraseEnds[i]));
-        }
-    }*/
-
     var lyricCount = 0;
 
     for (var i = 0; i < eventsPhraseArray.length; i++) {
@@ -456,7 +378,10 @@ function readLyricInput() {
 // Test if the syllable array length and lyric event array lengths are the same
 // Return a string of each phrase and it's event / syllable count
 function testLyricEventsAndSyllables() {
-    var phraseLyricSyllables = [];
+    while (HTMLPhraseDiv.firstChild) {
+        HTMLPhraseDiv.removeChild(HTMLPhraseDiv.firstChild);
+    }
+
     var morePhrases = 0;
 
     if (lyricsInputArray.length <= eventsPhraseArray.length) {
@@ -466,24 +391,32 @@ function testLyricEventsAndSyllables() {
     }
 
     for (var i = 0; i < morePhrases; i++) {
-        var tempString = "";
-
-        if ((i + 1) % 10 == 1 && i != 0) {
-            tempString += "<br/>";
-        }
+        var newSpan = document.createElement("span");
 
         if (i >= lyricsInputArray.length) {
-            tempString += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-0}";
+            newSpan.innerHTML += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-0}";
+            newSpan.style.color = "red";
         } else if (i >= eventsPhraseArray.length) {
-            tempString += "{" + (i + 1) + ", 0-" + lyricsInputArray.length + "}";
+            newSpan.innerHTML += "{" + (i + 1) + ", 0-" + lyricsInputArray.length + "}";
+            newSpan.style.color = "red";
         } else {
-            tempString += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-" + lyricsInputArray[i].length + "}";
+            newSpan.innerHTML += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-" + lyricsInputArray[i].length + "}";
+
+            if (eventsPhraseArray[i].length == lyricsInputArray[i].length) {
+                newSpan.style.color = "green";
+            } else {
+                newSpan.style.color = "red";
+            }
         }
 
-        phraseLyricSyllables.push(tempString);
-    }
+        if (i % 10 == 9 && i != 0) {
+            newSpan.innerHTML += "<br/>"
+        } else {
+            newSpan.innerHTML += ", "
+        }
 
-    return phraseLyricSyllables.join(", ");
+        HTMLPhraseDiv.appendChild(newSpan);
+    }
 }
 
 // Get the lyric events that are filled in from the .chart file
@@ -579,7 +512,7 @@ function writeBackupOfOriginalChart() {
     fs.writeFileSync(config.pathToBackupFolder + "/" + backupFileName, fullChart.join("\r\n"), "utf8", function (err) {
         if (err) {
             console.log("Problems with writing the chart backup: " + err);
-            customErrorMessage(true, "error" ,"Problems writing the backup of the original chart, stopping the process (check console)");
+            customErrorMessage(true, "error" ,"Problems writing the backup of the original chart, stopping the process (check console) and let DarkAngel2096 know!");
             return false;
         }
     });
