@@ -7,6 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="./css/mainTheme.css">
+    <link rel="stylesheet" href="./css/lined.css">
 </head>
 
 <body>
@@ -198,25 +199,8 @@
             module = undefined;
         }
     </script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     <script>
         if (window.module) module = window.module;
-    </script>
-    <script>
-        function hideAll() {
-            jQuery(".pane").addClass("hidden");
-        };
-
-        $(".sideButton").click(function (e) {
-            var target = e.currentTarget.name;
-            if (target) {
-                hideAll();
-                $("#" + target).toggleClass("hidden");
-            }
-        });
     </script>
     <script>
 	document.addEventListener("keydown", function (e) {
@@ -229,6 +213,9 @@
     </script>
     <script src="./mainScripts.js"></script>
     <!--<script src="./twitchTests.js"></script>-->
+
+    <script src="./js/lined.js"></script>
+    <script src="./js/ui.js"></script>
 </body>
 
 </html>
