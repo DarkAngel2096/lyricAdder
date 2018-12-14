@@ -27,11 +27,11 @@ body {
 
 #lyricsInputArea {
     height: 400px;
-    width: 600px;
+    width: 650px;
 }
 
 #chartName, #phraseCount, #lyricEventCount, #syllableCount, #phrasesAndLyrics {
-    color: rgba(155, 155, 200, 0.75)
+    color: rgba(100, 100, 200, 0.75)
 }
 
 #version {

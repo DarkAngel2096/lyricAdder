@@ -1,21 +1,21 @@
 /**
- * jQuery Lined Textarea Plugin 
+ * jQuery Lined Textarea Plugin
  *   https://github.com/aw20/JQueryLinedText
  *
  * Copyright (c) 2010 Alan Williamson
- * 
- * Version: 
+ *
+ * Version:
  *    $Id: jquery-linedtextarea.js 464 2010-01-08 10:36:33Z alan $
  *
  * Released under the MIT License:
  *    http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * Usage:
  *   Displays a line number count column to the left of the textarea
- *   
+ *
  *   Class up your textarea with a given class, or target it directly
  *   with JQuery Selectors
- *   
+ *
  *   $(".lined").linedtextarea({
  *    selectedLine: 10,
  *    selectedClass: 'lineselect'
@@ -30,11 +30,11 @@
 (function($) {
 
   $.fn.linedtextarea = function(options) {
-    
+
     // Get the Options
     var opts = $.extend({}, $.fn.linedtextarea.defaults, options);
-    
-    
+
+
     /*
      * Helper function to make sure the line numbers are always
      * kept up to the current system
@@ -45,20 +45,20 @@
           codeLines.append("<div class='lineno lineselect'>" + lineNo + "</div>");
         else
           codeLines.append("<div class='lineno'>" + lineNo + "</div>");
-        
+
         lineNo++;
       }
       return lineNo;
     };
-    
-    
+
+
     /*
      * Iterate through each of the elements are to be applied to
      */
     return this.each(function() {
       var lineNo = 1;
       var textarea = $(this);
-      
+
       /* Turn off the wrapping of as we don't want to screw up the line numbers */
       textarea.attr("wrap", "off");
       textarea.css({resize:'none'});
@@ -68,26 +68,26 @@
       textarea.wrap("<div class='linedtextarea'></div>");
       var linedTextAreaDiv  = textarea.parent().wrap("<div class='linedwrap' style='width:" + originalTextAreaWidth + "px'></div>");
       var linedWrapDiv      = linedTextAreaDiv.parent();
-      
-      linedWrapDiv.prepend("<div class='lines' style='width:50px'></div>");
-      
+
+      linedWrapDiv.prepend("<div class='lines' style='width:35px'></div>");
+
       var linesDiv  = linedWrapDiv.find(".lines");
       linesDiv.height( textarea.height() + 6 );
-      
-      
+
+
       /* Draw the number bar; filling it out where necessary */
       linesDiv.append( "<div class='codelines'></div>" );
       var codeLinesDiv  = linesDiv.find(".codelines");
       lineNo = fillOutLines( codeLinesDiv, linesDiv.height(), 1 );
 
-      /* Move the textarea to the selected line */ 
+      /* Move the textarea to the selected line */
       if ( opts.selectedLine != -1 && !isNaN(opts.selectedLine) ){
         var fontSize = parseInt( textarea.height() / (lineNo-2) );
         var position = parseInt( fontSize * opts.selectedLine ) - (textarea.height()/2);
         textarea[0].scrollTop = position;
       }
 
-      
+
       /* Set the width */
       var sidebarWidth          = linesDiv.outerWidth();
       var paddingHorizontal     = parseInt( linedWrapDiv.css("border-left-width") ) + parseInt( linedWrapDiv.css("border-right-width") ) + parseInt( linedWrapDiv.css("padding-left") ) + parseInt( linedWrapDiv.css("padding-right") );
@@ -96,9 +96,9 @@
 
       textarea.width( textareaNewWidth );
       linedWrapDiv.width( linedWrapDivNewWidth );
-      
 
-      
+
+
       /* React to the scroll event */
       textarea.scroll( function(tn){
         var domTextArea   = $(this)[0];
