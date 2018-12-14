@@ -26,12 +26,21 @@ body {
 }
 
 #lyricsInputArea {
-    height: 500px;
-    width: 600px;
+    height: 400px;
+    width: 650px;
 }
 
-span {
-    color: rgba(155, 155, 200, 0.75)
+#chartName, #phraseCount, #lyricEventCount, #syllableCount, #phrasesAndLyrics {
+    color: rgba(100, 100, 200, 0.75)
+}
+
+#version {
+    color: rgb(255, 0, 0)
+}
+
+.mainLyrics {
+    font-size: 15px;
+    color: green;
 }
 
 .about {
