@@ -13,7 +13,7 @@ var configTemplate = {
 }
 
 function createWindow () {
-    win = new BrowserWindow({ width: 900, height: 900});
+    win = new BrowserWindow({ width: 1000, height: 900});
 
     win.loadFile("index.html");
 

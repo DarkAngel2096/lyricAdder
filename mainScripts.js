@@ -362,7 +362,7 @@ function readLyricInput() {
             var tempPhrase = lyricsInputFull[i].replace(/-/g, "- ").replace(/=/g, "= ").trim().split(" ");
 
             for (var j = 0; j < tempPhrase.length; j++) {
-                if (tempPhrase[j] != "" && tempPhrase[j] != "-") {
+                if (tempPhrase[j] != "" && tempPhrase[j] != "-" && tempPhrase[j] != "=") {
                     tempArr.push(tempPhrase[j]);
                 }
             }
