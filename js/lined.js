@@ -53,7 +53,7 @@
       }
       let l = 1;
       lines.forEach((line, i) => {
-        if (~opts.selectedLines.indexOf(l)) {
+        if (textLines[i] && ~opts.selectedLines.indexOf(l)) {
           line.addClass("lineselect");
         } else {
           line.removeClass("lineselect");
