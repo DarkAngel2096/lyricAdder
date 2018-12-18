@@ -39,18 +39,30 @@
      * Helper function to make sure the line numbers are always
      * kept up to the current system
      */
-    var fillOutLines = function(codeLines, h, lineNo){
-      while ( (codeLines.height() - h ) <= 0 ){
-        if ( lineNo == opts.selectedLine )
-          codeLines.append("<div class='lineno lineselect'>" + lineNo + "</div>");
-        else
-          codeLines.append("<div class='lineno'>" + lineNo + "</div>");
-
-        lineNo++;
+    const lines = [];
+    const fillOutLines = (codeLines, h, lineNo, textarea) => {
+      const textLines = textarea.val().split("\n");
+      for (let i = lineNo; i <= textLines.length; i++) {
+        const line = $(`<div class="lineno">&nbsp;</div>`);
+        lines.push(line);
+        codeLines.append(line);
+        if (!textLines[i]) continue;
+        if (~opts.selectedLines.indexOf(lineNo)) line.addClass("lineselect");
+        line.html(lineNo++);
+        if (codeLines.height() >= h) break;
       }
+      let l = 1;
+      lines.forEach((line, i) => {
+        if (textLines[i] && ~opts.selectedLines.indexOf(l)) {
+          line.addClass("lineselect");
+        } else {
+          line.removeClass("lineselect");
+        }
+        if (textLines[i]) line.html(l++);
+        else line.html("&nbsp;");
+      });
       return lineNo;
     };
-
 
     /*
      * Iterate through each of the elements are to be applied to
@@ -78,7 +90,7 @@
       /* Draw the number bar; filling it out where necessary */
       linesDiv.append( "<div class='codelines'></div>" );
       var codeLinesDiv  = linesDiv.find(".codelines");
-      lineNo = fillOutLines( codeLinesDiv, linesDiv.height(), 1 );
+      lineNo = fillOutLines( codeLinesDiv, linesDiv.height(), 1, textarea);
 
       /* Move the textarea to the selected line */
       if ( opts.selectedLine != -1 && !isNaN(opts.selectedLine) ){
@@ -100,13 +112,20 @@
 
 
       /* React to the scroll event */
-      textarea.scroll( function(tn){
+      const update = function(args){
+        if (args.selectedLines) opts.selectedLines = args.selectedLines;
         var domTextArea   = $(this)[0];
         var scrollTop     = domTextArea.scrollTop;
         var clientHeight  = domTextArea.clientHeight;
         codeLinesDiv.css( {'margin-top': (-1*scrollTop) + "px"} );
-        lineNo = fillOutLines( codeLinesDiv, scrollTop + clientHeight, lineNo );
-      });
+        lineNo = fillOutLines( codeLinesDiv, scrollTop + clientHeight, lineNo, textarea);
+      };
+      textarea.on("input propertychange", update);
+      textarea.scroll(update);
+      // Awful hack: add "update" to global so it can be reached from
+      // mainScripts.js/testLyricEventsAndSyllables()
+      // (there's only one linedtextarea so it should be fine, I guess)
+      global.updateLinedTextArea = update;
 
 
       /* Should the textarea get resized outside of our control */
@@ -121,6 +140,7 @@
   // default options
   $.fn.linedtextarea.defaults = {
     selectedLine: -1,
+    selectedLines: [],
     selectedClass: 'lineselect'
   };
 })($);

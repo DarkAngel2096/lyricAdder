@@ -94,6 +94,7 @@ function writeLyrics() {
     }
     changeFields();
 }
+$("#lyricsInputArea").on("input propertychange", writeLyrics);
 
 // Button to restore the last lyric input from the config file
 function restoreFromConfig() {
@@ -361,7 +362,7 @@ function readLyricInput() {
             var tempPhrase = lyricsInputFull[i].replace(/-/g, "- ").replace(/=/g, "= ").trim().split(" ");
 
             for (var j = 0; j < tempPhrase.length; j++) {
-                if (tempPhrase[j] != "" && tempPhrase[j] != "-") {
+                if (tempPhrase[j] != "" && tempPhrase[j] != "-" && tempPhrase[j] != "=") {
                     tempArr.push(tempPhrase[j]);
                 }
             }
@@ -392,6 +393,19 @@ function testLyricEventsAndSyllables() {
     } else {
         morePhrases = lyricsInputArray.length;
     }
+
+    const lines = new Array(morePhrases).fill(0).map((_, i) => ({
+        index: i+1,
+        nbWordsChart: (eventsPhraseArray[i] || []).length,
+        nbWordsLyrics: (lyricsInputArray[i] || []).length
+    }));
+    global.updateLinedTextArea({
+        selectedLines: lines
+            .filter(({
+                nbWordsLyrics, nbWordsChart
+            }) => nbWordsLyrics != nbWordsChart)
+            .map(({ index }) => index)
+    });
 
     for (var i = 0; i < morePhrases; i++) {
         var newSpan = document.createElement("span");
