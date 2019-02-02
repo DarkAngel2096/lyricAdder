@@ -436,6 +436,10 @@ function understandData() {
 
     console.log("Rows of note placements for difficulties: " + counter);
 
+    doMath();
+
+
+
     try {
         fs.writeFileSync("../lyricAdder_backups" + "\\dataSifted.json", JSON.stringify(dataArray, null, "\t"), "utf8");
         console.log("Overwrite done without problems!");
@@ -444,6 +448,43 @@ function understandData() {
     }
 }
 
+// global variables for storing percentages for note counts:
+var expertPercTotal = 0;
+var expertPercCount = 0;
+var expertPercAvg = 0;
+
+var hardPercTotal = 0;
+var hardPercCount = 0;
+var hardPercAvg = 0;
+var hardPercMin = 100;
+var hardPercMax = 0;
+
+var mediumPercTotal = 0;
+var mediumPercCount = 0;
+var mediumPercAvg = 0;
+var mediumPercMin = 100;
+var mediumPercMax = 0;
+
+var easyPercTotal = 0;
+var easyPercCount = 0;
+var easyPercAvg = 0;
+var easyPercMin = 100;
+var easyPercMax = 0;
+
+// function to calculate the average percentage reduction for a chart
+function doMath() {
+    expertPercAvg = expertPercTotal / expertPercCount;
+    hardPercAvg = hardPercTotal / hardPercCount;
+    mediumPercAvg = mediumPercTotal / mediumPercCount;
+    easyPercAvg = easyPercTotal / easyPercCount;
+
+    console.log("Expert: Count: " + expertPercCount + ", Total: " + expertPercTotal + ", Avg: " + expertPercAvg);
+    console.log("Hard: Count: " + hardPercCount + ", Total: " + hardPercTotal + ", Avg: " + hardPercAvg + " (Min: " + hardPercMin + ", Max: " + hardPercMax + ")");
+    console.log("Medium: Count: " + mediumPercCount + ", Total: " + mediumPercTotal + ", Avg: " + mediumPercAvg + " (Min: " + mediumPercMin + ", Max: " + mediumPercMax + ")");
+    console.log("Easy: Count: " + easyPercCount + ", Total: " + easyPercTotal + ", Avg: " + easyPercAvg + " (Min: " + easyPercMin + ", Max: " + easyPercMax + ")");
+}
+
+// funtion to output a note count for each instrument
 function countNotes(inst, instrument) {
     var expertTotalCount = 0;
     var hardTotalCount = 0;
@@ -452,12 +493,45 @@ function countNotes(inst, instrument) {
 
     var totalCount = 0;
 
+    var expertPerc = 0;
+    var hardPerc = 0;
+    var mediumPerc = 0;
+    var easyPerc = 0;
+
     for (var i = 0; i < instrument.length; i++) {
         switch (instrument[i]["Difficulty"].substring(0, 4)) {
-            case "Expe": expertTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
-            case "Hard": hardTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
-            case "Medi": mediumTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
-            case "Easy": easyTotalCount += instrument[i]["6. Total Notes"]; totalCount += instrument[i]["6. Total Notes"]; break;
+            case "Expe":
+                expertTotalCount += instrument[i]["6. Total Notes"];
+                totalCount += instrument[i]["6. Total Notes"];
+
+                expertPerc = +(expertTotalCount / expertTotalCount * 100).toFixed(3);
+                console.log(expertPerc);
+
+                break;
+            case "Hard":
+                hardTotalCount += instrument[i]["6. Total Notes"];
+                totalCount += instrument[i]["6. Total Notes"];
+
+                hardPerc = +(hardTotalCount / expertTotalCount * 100).toFixed(3);
+                console.log(hardPerc);
+
+                break;
+            case "Medi":
+                mediumTotalCount += instrument[i]["6. Total Notes"];
+                totalCount += instrument[i]["6. Total Notes"];
+
+                mediumPerc = +(mediumTotalCount / expertTotalCount * 100).toFixed(3);
+                console.log(mediumPerc);
+
+                break;
+            case "Easy":
+                easyTotalCount += instrument[i]["6. Total Notes"];
+                totalCount += instrument[i]["6. Total Notes"];
+
+                easyPerc = +(easyTotalCount / expertTotalCount * 100).toFixed(3);
+                console.log(easyPerc);
+
+                break;
         }
     }
 
@@ -465,10 +539,45 @@ function countNotes(inst, instrument) {
         "Instrument": instrument,
         "Total Notes": totalCount,
         "Note count / percentages": {
-            "Expert": expertTotalCount + ", " + (expertTotalCount / expertTotalCount * 100).toFixed(3),
-            "Hard": hardTotalCount + ", " +  (hardTotalCount / expertTotalCount * 100).toFixed(3),
-            "Medium": mediumTotalCount + ", " +  (mediumTotalCount / expertTotalCount * 100).toFixed(3),
-            "Easy": easyTotalCount + ", " +  (easyTotalCount / expertTotalCount * 100).toFixed(3)
+            "Expert": expertTotalCount + ", " + expertPerc,
+            "Hard": hardTotalCount + ", " + hardPerc,
+            "Medium": mediumTotalCount + ", " +  mediumPerc,
+            "Easy": easyTotalCount + ", " +  easyPerc
+        }
+    }
+
+    if (expertPerc != 0 && (hardPerc != 0 && hardPerc != 100) && (mediumPerc != 0 && mediumPerc != 100) && (easyPerc != 0 && easyPerc != 100)) {
+        expertPercCount++;
+        expertPercTotal += expertPerc;
+
+        hardPercCount++;
+        hardPercTotal += hardPerc;
+
+        if (hardPerc < hardPercMin) {
+            hardPercMin = hardPerc;
+        }
+        if (hardPerc > hardPercMax) {
+            hardPercMax = hardPerc;
+        }
+
+        mediumPercCount++;
+        mediumPercTotal += mediumPerc;
+
+        if (mediumPerc < mediumPercMin) {
+            mediumPercMin = mediumPerc;
+        }
+        if (mediumPerc > mediumPercMax) {
+            mediumPercMax = mediumPerc;
+        }
+
+        easyPercCount++;
+        easyPercTotal += easyPerc;
+
+        if (easyPerc < easyPercMin) {
+            easyPercMin = easyPerc;
+        }
+        if (easyPerc > easyPercMax) {
+            easyPercMax = easyPerc;
         }
     }
 

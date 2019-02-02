@@ -237,7 +237,6 @@ function readAndSeparateChartFile() {
                         } else {
                             difficulties.push(fullChart.slice(indicies[i] - 1, indicies[i + 1] - 1));
                         }
-
                     } else {
                         console.log("Something odd found: " + tempString);
                     }
