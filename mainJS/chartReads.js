@@ -8,7 +8,19 @@ var chartSongInfo;
 var chartSyncInfo;
 var chartEventInfo;
 var chartNotesInfo; // only in this file directly taken from the .chart read
-var chartDiffsInfo; // variable to return, array of difficulties and notes for each
+
+// variable to return, array of difficulties and notes for each
+var chartDiffsInfo = {
+    "Single": [],
+    "SingleBass": [],
+    "DoubleGuitar": [],
+    "DoubleBass": [],
+    "DoubleRythm": [],
+    "Drum": [],
+    "Keyboard": [],
+    "GHLGuitar": [],
+    "GHLBass": []
+};
 
 // just testing now, will be specified with the readChart function call later
 var path = "C:\\Users\\s1800585\\Downloads\\Amaranthe - Army Of The Night (Powerwolf Cover)\\notes.chart";
@@ -42,7 +54,7 @@ function readChart(/* user inputted path to the chart file with the function cal
     var idx = fullChart.indexOf(element) - 1;
     while (idx != -2) {
         indices.push(idx);
-        idx = fullChart.indexOf(element, idx + 1);
+        idx = fullChart.indexOf(element, idx + 2);
     }
 
     // add the line count of the full chart file for ease of use in the splitting process
@@ -72,6 +84,7 @@ function readChart(/* user inputted path to the chart file with the function cal
         }
     }
 
+    // most likely won't be needed
     splitDifficulties();
 }
 
@@ -87,7 +100,7 @@ function testDiff(tempInd) {
     return false;
 }
 
-// 
+//
 
 // function to split the difficulties and instruments into an easier array to use later
 function splitDifficulties() {
