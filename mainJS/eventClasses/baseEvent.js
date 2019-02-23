@@ -1,12 +1,16 @@
-class baseEvent {
+class BaseEvent {
 
-    // tick is the placement tick
-    // type is the event type
-    
-    constructor (tick, type) {
+    /*
+    tick            (int)       = placement tick for the evnet
+    type            (string)    = type of extended classes
+    isGlobal        (bool)      = is the event global or not, true = global, false = local
+    */
+
+    constructor (tick, type, isGlobal) {
         this.tick = tick;
         this.type = type;
+        this.isGlobal = isGlobal;
     }
 }
 
-module.exports = {baseEvent}
+module.exports = {BaseEvent}
