@@ -204,7 +204,11 @@
                 <h1>WIP Chart Reader</h1>
                 <p>A work in progress chart reader to learn how to understand the note placements</p>
                 <hr>
+                <label for="chartFile">Select file</label>
+                <input type="file" id="chartReaderInput" name="chartFile" accept=".chart" onchange="fileReader()"></input>
 
+                <!--<input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
+-->
 
             </div>
         </div>
@@ -232,8 +236,6 @@
 
     <script src="./js/lined.js"></script>
     <script src="./js/ui.js"></script>
-
-    <script src="./chartReads.js"></script>
 </body>
 
 </html>
