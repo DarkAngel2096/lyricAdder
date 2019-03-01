@@ -5,8 +5,6 @@ const fs = require("fs");
 var songStuffs = require("./soundStuff.js");
 var difficultyReducer = require("./difficultyReducer.js");
 
-var chartReader = require("./mainJS/chartReads.js");
-
 // Make $ available to the Electron context
 const $ = require("jquery");
 
@@ -601,7 +599,7 @@ function dataSifter() {
     sifter.methodCalls();
 }
 
-
+const newChart = require ("./mainJS/newChart.js");
 
 // function to test chartReads.js
 function fileReader() {
@@ -609,23 +607,14 @@ function fileReader() {
 
     let path = document.getElementById("chartReaderInput").files[0].path;
 
-    try {
-        chartReader.readChart(path);
+    newChart.readChart(path);
 
-        console.log("Song info:");
-        console.log(chartReader.getSongInfo());
+    //let notes = newChart.getDiffsInfo();
 
-        console.log("Sync Info:");
-        console.log(chartReader.getSyncInfo());
+    //console.log(notes);
 
-        console.log("Event Info:");
-        console.log(chartReader.getEventInfo());
-
-        console.log("Diffs info:");
-        console.log(chartReader.getDiffsInfo());
-    } catch (err) {
-        console.log(err.stack);
-    }
+    let events = newChart.getEventInfo();
+    console.log(events);
 }
 
 
