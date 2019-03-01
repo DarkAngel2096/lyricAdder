@@ -2,228 +2,228 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Lyric Adding Thingy</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
-    <link rel="stylesheet" href="./css/mainTheme.css">
-    <link rel="stylesheet" href="./css/lined.css">
+	<meta charset="UTF-8">
+	<title>Lyric Adding Thingy</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+	<link rel="stylesheet" href="./css/mainTheme.css">
+	<link rel="stylesheet" href="./css/lined.css">
 </head>
 
 <body>
-    <div id="wrapper" class="toggled">
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand branding">
-                    <i class="far fa-closed-captioning"></i> Lyrics
-                </li>
-                <li>
-                    <a class="sideButton" name="lyricsInputPage" href="#">
-                        <i class="fas fa-music"></i> Lyric Input
-                    </a>
-                </li>
-                <li>
-                    <a class="sideButton" name="lyricsPreviewPage" href="#">
-                        <i class="far fa-file-audio"></i> Lyric Preview
-                    </a>
-                </li>
-                <li>
-                    <a class="sideButton" name="difficultyPage" href="#">
-                        <i class ="fas fa-less-than"></i> Difficulties
-                    </a>
-                </li>
-                <li>
-                    <a class="sideButton" name="settingsPage" href="#">
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                </li>
-                <li>
-                    <a class="sideButton" name="chartReader" href="#">
-                        <i class="fas fa-book-reader"></i> Chart Reader
-                    </a>
-                </li>
-            </ul>
-            <div class="about">
-                Created by DarkAngel2096
-                <br> v
-                <span id="version"></span>
-                <br>
-                <br>
-            </div>
-        </div>
-        <div id="page-content-wrapper" class="">
+	<div id="wrapper" class="toggled">
+		<div id="sidebar-wrapper">
+			<ul class="sidebar-nav">
+				<li class="sidebar-brand branding">
+					<i class="far fa-closed-captioning"></i> Lyrics
+				</li>
+				<li>
+					<a class="sideButton" name="lyricsInputPage" href="#">
+						<i class="fas fa-music"></i> Lyric Input
+					</a>
+				</li>
+				<li>
+					<a class="sideButton" name="lyricsPreviewPage" href="#">
+						<i class="far fa-file-audio"></i> Lyric Preview
+					</a>
+				</li>
+				<li>
+					<a class="sideButton" name="difficultyPage" href="#">
+						<i class ="fas fa-less-than"></i> Difficulties
+					</a>
+				</li>
+				<li>
+					<a class="sideButton" name="settingsPage" href="#">
+						<i class="fas fa-cog"></i> Settings
+					</a>
+				</li>
+				<li>
+					<a class="sideButton" name="chartReader" href="#">
+						<i class="fas fa-book-reader"></i> Chart Reader
+					</a>
+				</li>
+			</ul>
+			<div class="about">
+				Created by DarkAngel2096
+				<br> v
+				<span id="version"></span>
+				<br>
+				<br>
+			</div>
+		</div>
+		<div id="page-content-wrapper" class="">
 
-            <!--Start Page-->
-            <div id="startPage" class="pane">
-                <h1>Welcome to the Lyric Adder</h1>
-                <h5>A simple program created by DarkAngel2096</h5>
-                <hr>
-                <p>Start out with reading the text below, after that click the "Lyric Input" button on the side navbar</p>
-                <p>This program will make the process of adding lyrics into a .chart file (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into lyric events</p>
-                <p>No more selecting the lyric textbox in Moonscraper and remove the text "lyric " from it (by complete mistake of course...) or messing up the .chart file itself in a text editor</p>
-                <p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
-                <!--<input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>-->
-            </div>
+			<!--Start Page-->
+			<div id="startPage" class="pane">
+				<h1>Welcome to the Lyric Adder</h1>
+				<h5>A simple program created by DarkAngel2096</h5>
+				<hr>
+				<p>Start out with reading the text below, after that click the "Lyric Input" button on the side navbar</p>
+				<p>This program will make the process of adding lyrics into a .chart file (created automatically by Moonscraper) a lot easier by automating the insertion of syllables into lyric events</p>
+				<p>No more selecting the lyric textbox in Moonscraper and remove the text "lyric " from it (by complete mistake of course...) or messing up the .chart file itself in a text editor</p>
+				<p>Now it's just to write in the songs full lyrics into the text box in Lyric Input, select the correct .chart file (tho you'll still have to manually place the "phrase_start", "phrase_end" and "lyric " events)</p>
+				<!--<input type="checkbox" id="doNotShowAgain">Don't show this main page on next launches</input>-->
+			</div>
 
-            <!--Lyrics Input Page-->
-            <div id="lyricsInputPage" class="pane hidden">
-                <h1>Input the lyrics</h1>
-                <hr>
-                <label for="chartInput">Select the chart to modify</label>
-                <input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
-                <button type="button" onclick="getLyricsFromChartButton()">Read .chart for lyrics</button>
-                <br>
-                <div id="chartAndPhraseInfo" class="pane hidden">
-                    <br>
-                    <label for="chartName">Selected chart:</label>
-                    <span id="chartName" name="chartName"></span>
-                    <br>
-                    <label for="phraseCount">Total amount of phrases in the chart:</label>
-                    <span id="phraseCount" name="phraseCount"></span>
-                    <br>
-                    <label for="lyricEventCount">Total amount of lyric events in the chart:</label>
-                    <span id="lyricEventCount" name="lyricEventCount"></span>
-                    <br>
-                    <label for="syllableCount">Total amount of syllables in the input area:</label>
-                    <span id="syllableCount" name="syllableCount"></span>
-                    <br>
-                    <label for="phrasesAndLyrics">{phrase number, lyric event count - syllable count}:</label>
-                    <button type="button" onclick="showPhrasesAndLyrics()">Toggle lyrics and syllables</button>
-                    <br>
-                    <div id="phraseDiv" class="hidden"></div>
-                    <button id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
-                </div>
-                <span id="noChartFile" class="pane hidden" style="color:red;">No .chart file selected</span>
-                <span id="noLyrcisWritten" class="pane hidden" style="color:red;">No lyrics written in the text box below</span>
-                <div id="problemCauses" class="pane hidden">
-                    <span id="cautionMessage"></span>
-                </div>
-                <hr>
-                <p>Input the lyrics in the box below with the same syntax as it shows</p>
-                <textarea id="lyricsInputArea" placeholder="First phrase on the first line&#x0a;Sec-ond phrase on sec-ond line&#x0a;And syl-lab-les get sep-a-rat-ed with dash-es&#x0a;&#x0a;Al-so an emp-ty line doesn't mat-ter"></textarea>
-                <br>
-                <label for="restoreButton">Use this button to get last stored lyrics (gets saved every time input area changed)</label>
-                <br>
-                <button type="button" onclick="restoreFromConfig()">Restore lyrics</button>
-            </div>
+			<!--Lyrics Input Page-->
+			<div id="lyricsInputPage" class="pane hidden">
+				<h1>Input the lyrics</h1>
+				<hr>
+				<label for="chartInput">Select the chart to modify</label>
+				<input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
+				<button type="button" onclick="getLyricsFromChartButton()">Read .chart for lyrics</button>
+				<br>
+				<div id="chartAndPhraseInfo" class="pane hidden">
+					<br>
+					<label for="chartName">Selected chart:</label>
+					<span id="chartName" name="chartName"></span>
+					<br>
+					<label for="phraseCount">Total amount of phrases in the chart:</label>
+					<span id="phraseCount" name="phraseCount"></span>
+					<br>
+					<label for="lyricEventCount">Total amount of lyric events in the chart:</label>
+					<span id="lyricEventCount" name="lyricEventCount"></span>
+					<br>
+					<label for="syllableCount">Total amount of syllables in the input area:</label>
+					<span id="syllableCount" name="syllableCount"></span>
+					<br>
+					<label for="phrasesAndLyrics">{phrase number, lyric event count - syllable count}:</label>
+					<button type="button" onclick="showPhrasesAndLyrics()">Toggle lyrics and syllables</button>
+					<br>
+					<div id="phraseDiv" class="hidden"></div>
+					<button id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
+				</div>
+				<span id="noChartFile" class="pane hidden" style="color:red;">No .chart file selected</span>
+				<span id="noLyrcisWritten" class="pane hidden" style="color:red;">No lyrics written in the text box below</span>
+				<div id="problemCauses" class="pane hidden">
+					<span id="cautionMessage"></span>
+				</div>
+				<hr>
+				<p>Input the lyrics in the box below with the same syntax as it shows</p>
+				<textarea id="lyricsInputArea" placeholder="First phrase on the first line&#x0a;Sec-ond phrase on sec-ond line&#x0a;And syl-lab-les get sep-a-rat-ed with dash-es&#x0a;&#x0a;Al-so an emp-ty line doesn't mat-ter"></textarea>
+				<br>
+				<label for="restoreButton">Use this button to get last stored lyrics (gets saved every time input area changed)</label>
+				<br>
+				<button type="button" onclick="restoreFromConfig()">Restore lyrics</button>
+			</div>
 
-            <!--Lyrics Preview Page-->
-            <div id="lyricsPreviewPage" class="pane hidden">
-                <h1>Preview lyrics from a chart file</h1>
-                <hr>
+			<!--Lyrics Preview Page-->
+			<div id="lyricsPreviewPage" class="pane hidden">
+				<h1>Preview lyrics from a chart file</h1>
+				<hr>
 
-                <h3>Some info of this page (Still WIP, easily breakable)</h3>
-                <p>This shows the lyrics from the CHART file, not from the input window</p>
-                <p>You'll have to have a .chart file selected in "Lyric Input" and either have that one newly written or read the lyrics from it to be up to date</p>
-                <p>Play and pause the song to have the dropdown "build" itself to be able to select the phrase you want to start from, will NOT work unless the song is paused when selecting the phrase</p>
-                <hr>
+				<h3>Some info of this page (Still WIP, easily breakable)</h3>
+				<p>This shows the lyrics from the CHART file, not from the input window</p>
+				<p>You'll have to have a .chart file selected in "Lyric Input" and either have that one newly written or read the lyrics from it to be up to date</p>
+				<p>Play and pause the song to have the dropdown "build" itself to be able to select the phrase you want to start from, will NOT work unless the song is paused when selecting the phrase</p>
+				<hr>
 
-                <audio id="testMusic">
-                    <!--<source id="oggTrack" type="audio/ogg">-->
-                </audio>
-                <br>
+				<audio id="testMusic">
+					<!--<source id="oggTrack" type="audio/ogg">-->
+				</audio>
+				<br>
 
-                <button type="button" onclick="playMusic()">Play / Pause preview</button>
-                <button type="button" onclick="resetSong()">Reset from start</button>
-                <br>
+				<button type="button" onclick="playMusic()">Play / Pause preview</button>
+				<button type="button" onclick="resetSong()">Reset from start</button>
+				<br>
 
-                <span id="problems"></span>
-                <br>
+				<span id="problems"></span>
+				<br>
 
-                <label for="length">Total song length: </label>
-                <span name="length" id="totalLength"></span>
-                <br>
+				<label for="length">Total song length: </label>
+				<span name="length" id="totalLength"></span>
+				<br>
 
-                <label for="time">Current time: </label>
-                <span name="time" id="timings1"></span>
-                <br>
+				<label for="time">Current time: </label>
+				<span name="time" id="timings1"></span>
+				<br>
 
-                <select id="phraseDropDown">
-                </select>
-                <br>
+				<select id="phraseDropDown">
+				</select>
+				<br>
 
-                <div id="mainLyrics" class="mainLyrics"></div>
-            </div>
+				<div id="mainLyrics" class="mainLyrics"></div>
+			</div>
 
-            <!--Difficulty reducer-->
-            <div id="difficultyPage" class="pane hidden">
-                <h1>Difficulty reducer testing</h1>
-                <p>Highly WIP and will break</p>
-                <hr>
+			<!--Difficulty reducer-->
+			<div id="difficultyPage" class="pane hidden">
+				<h1>Difficulty reducer testing</h1>
+				<p>Highly WIP and will break</p>
+				<hr>
 
-                <button type="button" onclick="findInstrumentsInUse()">Find Instruments used</button>
-
-
-                <div id="generateStuff" class="pane hidden">
-                    <div id="difficultyCheckbox">
-                    </div>
-
-                    <p>Press this button to generate the difficulties that are below the one there is as lowest and will create for all instruments</p>
-                    <button type="button" onclick="generateDifficulties()">Generate lower difficulties</button>
-                </div>
-            </div>
-
-            <!--Settings Page-->
-            <div id="settingsPage" class="pane hidden">
-                <h1>Settings</h1>
-                <p>Futures settings stuff will be happening here....</p>
-                <hr>
-
-                <h3>Song data</h3>
-                <p>This is just a teporal data gathering thing for .chart files</p>
-
-                <input type="file" id="folderSelect" webkitdirectory directory multiple></input>
-                <button type="button" onclick="gatherChartData()">Gather data</button>
-                <br>
-
-                <button type="button" onclick="dataSifter()">Check the data</button>
-
-                <hr>
+				<button type="button" onclick="findInstrumentsInUse()">Find Instruments used</button>
 
 
-                <!--
-                <p>Link to YouTube video</p>
-                <input id="linkArea" type="text" size="50" onchange="testPlayVideo(this.value)"></input>
-                <br>
+				<div id="generateStuff" class="pane hidden">
+					<div id="difficultyCheckbox">
+					</div>
 
-                <iframe id="testVideos" width="560" height="315" controls></iframe>
-                <hr>
+					<p>Press this button to generate the difficulties that are below the one there is as lowest and will create for all instruments</p>
+					<button type="button" onclick="generateDifficulties()">Generate lower difficulties</button>
+				</div>
+			</div>
 
-                <p>School Stuff</p>
-                <input id="num1" type="number" placeholder="Input the first number"></input>
-                <input id="num2" type="number" placeholder="Input the second number"></input>
-                <button type="button" onclick="doSchoolMath()">Calculate</button>
-                <br>
+			<!--Settings Page-->
+			<div id="settingsPage" class="pane hidden">
+				<h1>Settings</h1>
+				<p>Futures settings stuff will be happening here....</p>
+				<hr>
 
-                <span id="schoolTextOutput"></span>-->
+				<h3>Song data</h3>
+				<p>This is just a teporal data gathering thing for .chart files</p>
 
-            </div>
+				<input type="file" id="folderSelect" webkitdirectory directory multiple></input>
+				<button type="button" onclick="gatherChartData()">Gather data</button>
+				<br>
 
-            <!-- Chart Reader -->
-            <div id="chartReader" class="pane hidden">
-                <h1>WIP Chart Reader</h1>
-                <p>A work in progress chart reader to learn how to understand the note placements</p>
-                <hr>
-                <label for="chartFile">Select file</label>
-                <input type="file" id="chartReaderInput" name="chartFile" accept=".chart" onchange="fileReader()"></input>
-                <button type="button" onclick="fileReader()">read again</button>
+				<button type="button" onclick="dataSifter()">Check the data</button>
 
-                <!--<input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
+				<hr>
+
+
+				<!--
+				<p>Link to YouTube video</p>
+				<input id="linkArea" type="text" size="50" onchange="testPlayVideo(this.value)"></input>
+				<br>
+
+				<iframe id="testVideos" width="560" height="315" controls></iframe>
+				<hr>
+
+				<p>School Stuff</p>
+				<input id="num1" type="number" placeholder="Input the first number"></input>
+				<input id="num2" type="number" placeholder="Input the second number"></input>
+				<button type="button" onclick="doSchoolMath()">Calculate</button>
+				<br>
+
+				<span id="schoolTextOutput"></span>-->
+
+			</div>
+
+			<!-- Chart Reader -->
+			<div id="chartReader" class="pane hidden">
+				<h1>WIP Chart Reader</h1>
+				<p>A work in progress chart reader to learn how to understand the note placements</p>
+				<hr>
+				<label for="chartFile">Select file</label>
+				<input type="file" id="chartReaderInput" name="chartFile" accept=".chart" onchange="fileReader()"></input>
+				<button type="button" onclick="fileReader()">read again</button>
+
+				<!--<input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
 -->
 
-            </div>
-        </div>
-    </div>
-    <script>
-        if (typeof module === 'object') {
-            window.module = module;
-            module = undefined;
-        }
-    </script>
-    <script>
-        if (window.module) module = window.module;
-    </script>
-    <script>
+			</div>
+		</div>
+	</div>
+	<script>
+		if (typeof module === 'object') {
+			window.module = module;
+			module = undefined;
+		}
+	</script>
+	<script>
+		if (window.module) module = window.module;
+	</script>
+	<script>
 	document.addEventListener("keydown", function (e) {
 		if (e.which === 123) {
 			require('electron').remote.getCurrentWindow().toggleDevTools();
@@ -231,12 +231,12 @@
 			location.reload();
 		}
 	});
-    </script>
-    <script src="./mainScripts.js"></script>
-    <!--<script src="./twitchTests.js"></script>-->
+	</script>
+	<script src="./mainScripts.js"></script>
+	<!--<script src="./twitchTests.js"></script>-->
 
-    <script src="./js/lined.js"></script>
-    <script src="./js/ui.js"></script>
+	<script src="./js/lined.js"></script>
+	<script src="./js/ui.js"></script>
 </body>
 
 </html>

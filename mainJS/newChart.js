@@ -43,18 +43,16 @@ var oldNotes;
 var chartSongInfo;
 var chartSyncInfo;
 var chartEventInfo;
-
-// variable to return, array of difficulties and notes for each
 var chartDiffsInfo = {
-    "Single": {},
-    "SingleBass": {},
-    "DoubleGuitar": {},
-    "DoubleRythm": {},
-    "DoubleBass": {},
-    "Drum": {},
-    "Keyboard": {},
-    "GHLGuitar": {},
-    "GHLBass": {}
+	"Single": {},
+	"SingleBass": {},
+	"DoubleGuitar": {},
+	"DoubleRythm": {},
+	"DoubleBass": {},
+	"Drum": {},
+	"Keyboard": {},
+	"GHLGuitar": {},
+	"GHLBass": {}
 }
 
 
@@ -67,210 +65,210 @@ var chartDiffsInfo = {
 // functions
 function readChart(path) {
 
-    // just to get to know how long reading the file takes
-    console.log("Starting to read file");
-    var startTime = Date.now();
+	// just to get to know how long reading the file takes
+	console.log("Starting to read file");
+	var startTime = Date.now();
 
-    // check if it's even a file
-    if (!fs.statSync(path).isFile()) {
-        // log not a file
-        console.log("Not a file, took to read: " + (Date.now() - startTime) + "ms.");
-        return;
-    }
+	// check if it's even a file
+	if (!fs.statSync(path).isFile()) {
+		// log not a file
+		console.log("Not a file, took to read: " + (Date.now() - startTime) + "ms.");
+		return;
+	}
 
-    // check if it's a .chart file
-    if (!path.endsWith(".chart")) {
-        // log incorrect file type
-        console.log("Not a .chart file, took to read: " + (Date.now() - startTime) + "ms.");
-        return;
-    }
+	// check if it's a .chart file
+	if (!path.endsWith(".chart")) {
+		// log incorrect file type
+		console.log("Not a .chart file, took to read: " + (Date.now() - startTime) + "ms.");
+		return;
+	}
 
-    // check if the modified time is changed
-    if (fs.statSync(path).mtimeMs == chartLastModified) {
-        console.log("same times: " + fs.statSync(path).mtimeMs + " and " + chartLastModified);
+	// check if the modified time is changed
+	if (fs.statSync(path).mtimeMs == chartLastModified) {
+		console.log("same times: " + fs.statSync(path).mtimeMs + " and " + chartLastModified);
 
-        songInfoIsChanged = false;
-        syncIsChanged = false;
-        eventsIsChanged = false;
-        notesIsChanged = false;
+		songInfoIsChanged = false;
+		syncIsChanged = false;
+		eventsIsChanged = false;
+		notesIsChanged = false;
 
-        console.log("Took to read: " + (Date.now() - startTime) + "ms");
-        return;
-    }
+		console.log("Took to read: " + (Date.now() - startTime) + "ms");
+		return;
+	}
 
-    // read chart file and split it up into an array for each line
-    try {
-        fullChartFile = [];
-        fullChartFile = fs.readFileSync(path, "utf8").split("\r\n").map(line => line.trimRight());
+	// read chart file and split it up into an array for each line
+	try {
+		fullChartFile = [];
+		fullChartFile = fs.readFileSync(path, "utf8").split("\r\n").map(line => line.trimRight());
 
-        // search for lines only containing "" and remove them from the array;
-        for (var i = fullChartFile.length; i >= 0; i--) {
-            if (fullChartFile[i] == "") {
-                console.log("removing: \*" + fullChartFile[i] + "\* at index: " + i);
-                fullChartFile.splice(i, 1);
-            }
-        }
-    } catch (err) {
-        console.log("Problems reading file: " + err);
-        console.log(err.stack);
-        return;
-    }
+		// search for lines only containing "" and remove them from the array;
+		for (var i = fullChartFile.length; i >= 0; i--) {
+			if (fullChartFile[i] == "") {
+				console.log("removing: \*" + fullChartFile[i] + "\* at index: " + i);
+				fullChartFile.splice(i, 1);
+			}
+		}
+	} catch (err) {
+		console.log("Problems reading file: " + err);
+		console.log(err.stack);
+		return;
+	}
 
-    // check on which lines the element "{" can be found and take the array index of the field before as that is the tag name
-    var indices = [];
-    var element = "{";
-    var idx = fullChartFile.indexOf(element) - 1;
-    while (idx != -2) {
-        indices.push(idx);
-        idx = fullChartFile.indexOf(element, idx + 2) - 1;
-    }
+	// check on which lines the element "{" can be found and take the array index of the field before as that is the tag name
+	var indices = [];
+	var element = "{";
+	var idx = fullChartFile.indexOf(element) - 1;
+	while (idx != -2) {
+		indices.push(idx);
+		idx = fullChartFile.indexOf(element, idx + 2) - 1;
+	}
 
-    // add the line count of the full chart file for ease of use in the splitting process
-    indices.push(fullChartFile.length);
+	// add the line count of the full chart file for ease of use in the splitting process
+	indices.push(fullChartFile.length);
 
-    // just check if any tag was found (test against 1 because the full length push)
-    if (indices.length == 1) {
-        // log problems with file not having any tags
-        console.log(indices);
-        console.log("nothing useful found from the chart");
-        throw new Error ("Nothing useful found from the .chart");
-        return;
-    }
+	// just check if any tag was found (test against 1 because the full length push)
+	if (indices.length == 1) {
+		// log problems with file not having any tags
+		console.log(indices);
+		console.log("nothing useful found from the chart");
+		throw new Error ("Nothing useful found from the .chart");
+		return;
+	}
 
-    // slicing out the needed parts for each tag type, except difficulties which just get pushed into one array
-    for (var i = 0; i < indices.length - 1; i++) {
-        switch (fullChartFile[indices[i]]) {
-            case "[Song]": chartSongInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
-            case "[SyncTrack]": chartSyncInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
-            case "[Events]": chartEventInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
-            default: {
-                var tempReturn = testInstAndDiff(fullChartFile[indices[i]]);
+	// slicing out the needed parts for each tag type, except difficulties which just get pushed into one array
+	for (var i = 0; i < indices.length - 1; i++) {
+		switch (fullChartFile[indices[i]]) {
+			case "[Song]": chartSongInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
+			case "[SyncTrack]": chartSyncInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
+			case "[Events]": chartEventInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
+			default: {
+				var tempReturn = testInstAndDiff(fullChartFile[indices[i]]);
 
-                if (tempReturn.Difficulty && tempReturn.Instrument) {
-                    chartDiffsInfo[tempReturn.Instrument][tempReturn.Difficulty] = fullChartFile.slice(indices[i], indices[i + 1]);
-                } else if (!tempReturn.Difficulty && tempReturn.Instrument) {
-                    // log difficulty not found, problems with chart file syntax?
-                    console.log(fullChartFile[indices[i]]);
-                } else if (tempReturn.Difficulty && !tempReturn.Instrument) {
-                    // log instrument not found, problemws with chart file syntax?
-                    console.log(fullChartFile[indices[i]]);
-                } else {
-                    // log other problems
-                }
-            }
-        }
-    }
+				if (tempReturn.Difficulty && tempReturn.Instrument) {
+					chartDiffsInfo[tempReturn.Instrument][tempReturn.Difficulty] = fullChartFile.slice(indices[i], indices[i + 1]);
+				} else if (!tempReturn.Difficulty && tempReturn.Instrument) {
+					// log difficulty not found, problems with chart file syntax?
+					console.log(fullChartFile[indices[i]]);
+				} else if (tempReturn.Difficulty && !tempReturn.Instrument) {
+					// log instrument not found, problemws with chart file syntax?
+					console.log(fullChartFile[indices[i]]);
+				} else {
+					// log other problems
+				}
+			}
+		}
+	}
 
-    testTagsChanged();
+	testTagsChanged();
 
-    console.log("new run throught the file:");
-    console.log("Song: " + songInfoIsChanged);
-    console.log("Sync: " + syncIsChanged);
-    console.log("Events: " + eventsIsChanged);
-    console.log("Notes: " + notesIsChanged);
+	console.log("new run throught the file:");
+	console.log("Song: " + songInfoIsChanged);
+	console.log("Sync: " + syncIsChanged);
+	console.log("Events: " + eventsIsChanged);
+	console.log("Notes: " + notesIsChanged);
 
-    chartLastModified = fs.statSync(path).mtimeMs;
+	chartLastModified = fs.statSync(path).mtimeMs;
 
-    console.log("Reading done in: " + (Date.now() - startTime) + "ms.");
+	console.log("Reading done in: " + (Date.now() - startTime) + "ms.");
 }
 
 // function to test which instrument and difficulty we are working with;
 function testInstAndDiff(tempInd) {
-    let difficulties = ["[Expert", "[Hard", "[Medium", "[Easy"];
-    let instruments = ["Single]", "SingleBass]", "DoubleGuitar]", "DoubleRythm]", "DoubleBass]", "Drum]", "Keyboard]", "GHLGuitar]", "GHLBass"];
+	let difficulties = ["[Expert", "[Hard", "[Medium", "[Easy"];
+	let instruments = ["Single]", "SingleBass]", "DoubleGuitar]", "DoubleRythm]", "DoubleBass]", "Drum]", "Keyboard]", "GHLGuitar]", "GHLBass"];
 
-    var returnObject = {}
+	var returnObject = {}
 
-    for (var i = 0; i < difficulties.length; i++) {
-        if (tempInd.startsWith(difficulties[i])) {
-            returnObject.Difficulty = difficulties[i].substring(1).trim();
-            break;
-        }
-    }
+	for (var i = 0; i < difficulties.length; i++) {
+		if (tempInd.startsWith(difficulties[i])) {
+			returnObject.Difficulty = difficulties[i].substring(1).trim();
+			break;
+		}
+	}
 
-    for (var i = 0; i < instruments.length; i++) {
-        if (tempInd.endsWith(instruments[i])) {
-            returnObject.Instrument = instruments[i].substring(0, instruments[i].length - 1).trim();
-            break;
-        }
-    }
+	for (var i = 0; i < instruments.length; i++) {
+		if (tempInd.endsWith(instruments[i])) {
+			returnObject.Instrument = instruments[i].substring(0, instruments[i].length - 1).trim();
+			break;
+		}
+	}
 
-    return returnObject;
+	return returnObject;
 }
 
 // function to test all the tags if they were changed or not
 function testTagsChanged() {
 
-    // test [Song] tag
-    if (testFunc(chartSongInfo, oldSong)) {
-        songInfoIsChanged = true;
-        oldSong = chartSongInfo;
-    } else {
-        songInfoIsChanged = false;
-    }
+	// test [Song] tag
+	if (testFunc(chartSongInfo, oldSong)) {
+		songInfoIsChanged = true;
+		oldSong = chartSongInfo;
+	} else {
+		songInfoIsChanged = false;
+	}
 
-    // test [SyncTrack] tag
-    if (testFunc(chartSyncInfo, oldSync)) {
-        syncIsChanged = true;
-        oldSync = chartSyncInfo;
-    } else {
-        syncIsChanged = false;
-    }
+	// test [SyncTrack] tag
+	if (testFunc(chartSyncInfo, oldSync)) {
+		syncIsChanged = true;
+		oldSync = chartSyncInfo;
+	} else {
+		syncIsChanged = false;
+	}
 
-    // test [Event] tag
-    if (testFunc(chartEventInfo, oldEvents)) {
-        eventsIsChanged = true;
-        oldEvents = chartEventInfo;
-    } else {
-        eventsIsChanged = false;
-    }
+	// test [Event] tag
+	if (testFunc(chartEventInfo, oldEvents)) {
+		eventsIsChanged = true;
+		oldEvents = chartEventInfo;
+	} else {
+		eventsIsChanged = false;
+	}
 
-    // test all instruments and difficulties (if one is changed, rebuild all)
-    if (testDiffs(chartDiffsInfo, oldNotes)) {
-        notesIsChanged = true;
-        oldNotes = JSON.parse(JSON.stringify(chartDiffsInfo));
-    } else {
-        notesIsChanged = false;
-    }
+	// test all instruments and difficulties (if one is changed, rebuild all)
+	if (testDiffs(chartDiffsInfo, oldNotes)) {
+		notesIsChanged = true;
+		oldNotes = JSON.parse(JSON.stringify(chartDiffsInfo));
+	} else {
+		notesIsChanged = false;
+	}
 }
 
 // test function for song, synctrack and events tags as they are only single dimension arrays this will work
 function testFunc(newArr, oldArr) {
-    for (var i = 0; i < newArr.length; i++) {
-        if (oldArr == undefined) {
-            return true;
-        }
+	for (var i = 0; i < newArr.length; i++) {
+		if (oldArr == undefined) {
+			return true;
+		}
 
-        if (newArr[i] != oldArr[i]) {
-            return true;
-        }
-    }
-    return false;
+		if (newArr[i] != oldArr[i]) {
+			return true;
+		}
+	}
+	return false;
 }
 
 // test function for difficulties, has to be done this way because ob the structure of the object it is
 function testDiffs(newArr, oldArr) {
-    var instruments = Object.keys(newArr);
+	var instruments = Object.keys(newArr);
 
-    for (var i = 0; i < instruments.length; i++) {
-        var diffs = Object.keys(newArr[instruments[i]]);
+	for (var i = 0; i < instruments.length; i++) {
+		var diffs = Object.keys(newArr[instruments[i]]);
 
-        for (var j = 0; j < diffs.length; j++) {
-            for (var k = 0; k < newArr[instruments[i]][diffs[j]].length; k++) {
-                if (oldNotes == undefined) {
-                    console.log("undefined found");
-                    return true;
-                }
+		for (var j = 0; j < diffs.length; j++) {
+			for (var k = 0; k < newArr[instruments[i]][diffs[j]].length; k++) {
+				if (oldNotes == undefined) {
+					console.log("undefined found");
+					return true;
+				}
 
-                if (newArr[instruments[i]][diffs[j]][k] != oldArr[instruments[i]][diffs[j]][k]) {
-                    console.log("odds found");
-                    return true;
-                }
-            }
-        }
-    }
+				if (newArr[instruments[i]][diffs[j]][k] != oldArr[instruments[i]][diffs[j]][k]) {
+					console.log("odds found");
+					return true;
+				}
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 
@@ -280,114 +278,214 @@ function testDiffs(newArr, oldArr) {
 
 // song data
 function getSongInfo() {
-    // start time for when called
-    console.log("getSongInfo() called.");
-    var startSongTime = Date.now();
+	// start time for when called
+	console.log("getSongInfo() called.");
+	var startSongTime = Date.now();
 
-    if (chartSongInfo.length < 4) {
-        // log no info found
-        console.log("Song tag empty: " + chartSongInfo);
-        throw new Error ("Nothing found in the [Song] tag");
-    }
+	if (chartSongInfo.length < 4) {
+		// log no info found
+		console.log("Song tag empty: " + chartSongInfo);
+		throw new Error ("Nothing found in the [Song] tag");
+	}
 
-    if (songInfoIsChanged) {
-        console.log("Song info was changed");
-        objectSongInfo = createObjects(chartSongInfo);
-        //objectSongInfo = JSON.parse(JSON.stringify(createObjects(chartSongInfo)));
-    }
+	if (songInfoIsChanged) {
+		console.log("Song info was changed");
+		objectSongInfo = createObjects(chartSongInfo);
+		//objectSongInfo = JSON.parse(JSON.stringify(createObjects(chartSongInfo)));
+	}
 
-    console.log("done and returning: " + (Date.now() - startSongTime) + "ms.");
-    return objectSongInfo;
+	console.log("done and returning: " + (Date.now() - startSongTime) + "ms.");
+	return objectSongInfo;
 }
 
 // sync data
 function getSyncInfo() {
 
-    console.log("getSyncInfo() called.");
-    var startSyncTime = Date.now();
+	console.log("getSyncInfo() called.");
+	var startSyncTime = Date.now();
 
-    if (chartSyncInfo.length < 4) {
-        // log no info found
-        console.log("Sync tag empty: " + chartSyncInfo);
-        throw new Error ("Nothing found in the [SyncTrack] tag");
-    }
+	if (chartSyncInfo.length < 4) {
+		// log no info found
+		console.log("Sync tag empty: " + chartSyncInfo);
+		throw new Error ("Nothing found in the [SyncTrack] tag");
+	}
 
-    if (syncIsChanged) {
-        console.log("Sync info was changed");
-        objectSyncInfo = createObjects(chartSyncInfo);
-    }
+	if (syncIsChanged) {
+		console.log("Sync info was changed");
+		objectSyncInfo = createObjects(chartSyncInfo);
+	}
 
-    console.log("done and returning: " + (Date.now() - startSyncTime) + "ms.");
-    return objectSyncInfo;
+	console.log("done and returning: " + (Date.now() - startSyncTime) + "ms.");
+	return objectSyncInfo;
 }
 
 // events data
 function getEventInfo() {
 
-    console.log("getEventInfo() called.");
-    var startEventTime = Date.now();
+	console.log("getEventInfo() called.");
+	var startEventTime = Date.now();
 
-    if (chartEventInfo.length < 4) {
-        // log no info found
-        console.log("Event tag empty: " + chartEventInfo);
-        throw new Error ("Nothing found in the [Event] tag");
-    }
+	if (chartEventInfo.length < 4) {
+		// log no info found
+		console.log("Event tag empty: " + chartEventInfo);
+		throw new Error ("Nothing found in the [Event] tag");
+	}
 
-    if (eventsIsChanged) {
-        console.log("Events info was changed");
-        objectEventInfo = createObjects(chartEventInfo);
-    }
+	if (eventsIsChanged) {
+		console.log("Events info was changed");
+		objectEventInfo = createObjects(chartEventInfo);
+	}
 
-    console.log("done and returning: " + (Date.now() - startEventTime) + "ms.");
-    return objectEventInfo;
+	console.log("done and returning: " + (Date.now() - startEventTime) + "ms.");
+	return objectEventInfo;
 }
 
 function getDiffsInfo() {
 
-    console.log("getDiffsInfo() called.");
-    var startDiffsTime = Date.now();
+	console.log("getDiffsInfo() called.");
+	var startDiffsTime = Date.now();
 
-    var tempInst = Object.keys(chartDiffsInfo);
-    var tempDiffsCount = 0;
+	var tempInst = Object.keys(chartDiffsInfo);
+	var tempDiffsCount = 0;
 
-    for (var i = 0; i < tempInst.length; i++) {
-        var tempDiffs = Object.keys(chartDiffsInfo[tempInst[i]]);
-        if (tempDiffs > 0) {
-            tempDiffsCount += tempDiffs.length;
-        }
-    }
+	for (var i = 0; i < tempInst.length; i++) {
+		var tempDiffs = Object.keys(chartDiffsInfo[tempInst[i]]);
+		if (tempDiffs > 0) {
+			tempDiffsCount += tempDiffs.length;
+		}
+	}
 
-    if (tempDiffsCount == 0) {
-        // log nothing found
-        console.log("No notes placed down");
-        throw new Error ("No notes placed down");
-    }
+	if (tempDiffsCount == 0) {
+		// log nothing found
+		console.log("No notes placed down");
+		throw new Error ("No notes placed down");
+	}
 
-    if (notesIsChanged) {
-        console.log("Notes info was changed");
+	if (notesIsChanged) {
+		console.log("Notes info was changed");
 
-        // need to change this still
-        //createObjects(chartDiffsInfo);
-    }
+		// need to change this still
+		//createObjects(chartDiffsInfo);
+	}
 
-    console.log("done and returning: " + (Date.now() - startDiffsTime) + "ms.");
-    return chartDiffsInfo;
+	console.log("done and returning: " + (Date.now() - startDiffsTime) + "ms.");
+	return chartDiffsInfo;
 }
 
 // function to create objects for Song, SyncTrack and Events tags
 function createObjects(infoArr) {
 
-    var returnArray = [];
+	var returnArray = [];
 
-    for (var i = 0; i < infoArr.length; i++) {
-        var lineInfo = infoArr[i].trim().replace(/ =/, "").split(" ").map(index => index.trim());
+	var toForce = false;
+	var toTap = false;
+	var chordTick = 0;
 
-        //console.log(lineInfo);
+	for (var i = 0; i < infoArr.length; i++) {
+		var lineInfo = infoArr[i].substring(0, infoArr[i].length - 1).trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
 
-        if (lineInfo.length != 0) {
-            
-        }
+		//console.log(lineInfo);
 
+		if (lineInfo.length != 1) {
+			lineInfo[0] = parseInt(lineInfo[0]);
+
+			switch (lineInfo[1]) {
+				case "N": {
+					lineInfo[2] = parseInt(lineInfo[2]);
+
+					switch (lineInfo[2]) {
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 7:
+						case 8: {
+							if (chordTick == lineInfo[0]) {
+								returnArray.push(lineInfo[0], lineInfo[2], toForce, toTap, true, parseInt(lineInfo[3]));
+							} else {
+								returnArray.push(lineInfo[0], lineInfo[2], toForce, toTap, false, parseInt(lineInfo[3]));
+							}
+							chordTick = lineInfo[0];
+
+							toForce = false;
+							toTap = false;
+						}
+						case 5: {
+							toForce = true;
+						}
+						case 6: {
+							toTap = true;
+						}
+					}
+					break;
+				}
+				case "S": {
+					returnArray.push(new StarPower(lineInfo[0], parseInt(lineInfo[3])));
+					break;
+				}
+				case "TS": {
+					if (lineInfo[3]) {
+						returnArray.push(new TimeSignature(lineInfo[0], parseInt(lineInfo[2]), parseInt(lineInfo[3])));
+					} else {
+						returnArray.push(new TimeSignature(lineInfo[0], parseInt(lineInfo[2]), 4));
+					}
+					break;
+				}
+				case "B": {
+					returnArray.push(new BPM(lineInfo[0], parseInt(lineInfo[2])));
+					break;
+				}
+				case "E": {
+
+					console.log(lineInfo);
+
+					switch (lineInfo[2]) {
+						case "solo": {
+							returnArray.push(new SoloEvent(lineInfo[0]));
+							break;
+						}
+						case "soloend": {
+							returnArray.push(new SoloEndEvent(lineInfo[0]));
+							break;
+						}
+						case "section": {
+							returnArray.push(new SectionEvent(lineInfo[0], lineInfo.slice(3, lineInfo.length).join(" ")));
+							break;
+						}
+						case "lyric": {
+							returnArray.push(new LyricEvent(lineInfo[0], lineInfo.slice(3, lineInfo.length).join(" ")));
+							break;
+						}
+						case "phrase_start": {
+							returnArray.push(new PhraseStartEvent(lineInfo[0]));
+							break;
+						}
+						case "phrase_end": {
+							returnArray.push(new PhraseEndEvent(lineInfo[0]));
+							break;
+						}
+						case "default": {
+							returnArray.push(new BaseEvent(lineInfo[0], "default", false))
+							break;
+						}
+						default: {
+							console.log("Some other event: " + lineInfo);
+							break;
+						}
+					}
+
+					break;
+				}
+				default: {
+					console.log("other stuff: " + lineInfo);
+				}
+			}
+		}
+	}
+
+	return returnArray;
+}
 /*
 192 = E solo
 192 = E soloend
@@ -421,60 +519,58 @@ function createObjects(infoArr) {
 */
 
 
-        /*if (lineInfo.length != 1) {
-            if (["N", "TS", "B", "S"].includes(lineInfo[2])) {
-                switch (lineInfo[2]) {
-                    case "N": {
-                        console.log("Note");
-                        break;
-                    }
-                    case "S": {
-                        console.log("SP");
-                        break;
-                    }
-                    case "TS": {
-                        console.log("TS");
-                        break;
-                    }
-                    case "B": {
-                        console.log("BPM");
-                        break;
-                    }
-                    default: {
-                        console.log("Other");
-                        break;
-                    }
-                }
-            } else if (lineInfo[2].includes("E")) {
-                switch (lineInfo[3]) {
-                    case "solo": {
-                        console.log("Solo start at: " + lineInfo[0]);
-                        break;
-                    }
-                    case "soloend": {
-                        console.log("Soloend at: " + lineInfo[0]);
-                        break;
-                    }
-                    case "phrase_start": {
-                        console.log("Phrase start");
-                        break;
-                    }
-                    case "phrase_end": {
-                        console.log("Phrase end");
-                        break;
-                    }
-                    case "lyric": {
-                        console.log("Lyric: " + lineInfo[4]);
-                        break;
-                    }
-                    case "section": {
-                        console.log("Section");
-                        break;
-                    }
-                }
-            }
-        }*/
-    }
-}
+		/*if (lineInfo.length != 1) {
+			if (["N", "TS", "B", "S"].includes(lineInfo[2])) {
+				switch (lineInfo[2]) {
+					case "N": {
+						console.log("Note");
+						break;
+					}
+					case "S": {
+						console.log("SP");
+						break;
+					}
+					case "TS": {
+						console.log("TS");
+						break;
+					}
+					case "B": {
+						console.log("BPM");
+						break;
+					}
+					default: {
+						console.log("Other");
+						break;
+					}
+				}
+			} else if (lineInfo[2].includes("E")) {
+				switch (lineInfo[3]) {
+					case "solo": {
+						console.log("Solo start at: " + lineInfo[0]);
+						break;
+					}
+					case "soloend": {
+						console.log("Soloend at: " + lineInfo[0]);
+						break;
+					}
+					case "phrase_start": {
+						console.log("Phrase start");
+						break;
+					}
+					case "phrase_end": {
+						console.log("Phrase end");
+						break;
+					}
+					case "lyric": {
+						console.log("Lyric: " + lineInfo[4]);
+						break;
+					}
+					case "section": {
+						console.log("Section");
+						break;
+					}
+				}
+			}
+		}*/
 
 module.exports = {readChart, getSongInfo, getSyncInfo, getEventInfo, getDiffsInfo}

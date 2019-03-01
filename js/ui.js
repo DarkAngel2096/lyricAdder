@@ -1,5 +1,5 @@
 function hideAll() {
-    $(".pane").addClass("hidden");
+	$(".pane").addClass("hidden");
 };
 
 let linesAreAdded = false;
@@ -10,17 +10,16 @@ if (!$("#lyricsInputPage").hasClass("hidden")) {
 }
 
 $(".sideButton").click(function (e) {
-    var target = e.currentTarget.name;
-    if (target) {
-        hideAll();
-        $("#" + target).toggleClass("hidden");
-    }
+	var target = e.currentTarget.name;
+	if (target) {
+		hideAll();
+		$("#" + target).toggleClass("hidden");
+	}
 
-    // Add line numbers when displaying the actual lyric adder window
-    // (i.e. when the textarea is actually here)
-    if (!linesAreAdded && target == "lyricsInputPage") {
-        $("#lyricsInputArea").linedtextarea();
-        linesAreAdded = true;
-    }
+	// Add line numbers when displaying the actual lyric adder window
+	// (i.e. when the textarea is actually here)
+	if (!linesAreAdded && target == "lyricsInputPage") {
+		$("#lyricsInputArea").linedtextarea();
+		linesAreAdded = true;
+	}
 });
-
