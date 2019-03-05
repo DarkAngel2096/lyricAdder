@@ -8,7 +8,7 @@ class BPM extends BaseEvent {
 
 	constructor (tick, bpm) {
 		super (tick, "bpm", true);
-		this.bpm = bpm * 1000;
+		this.bpm = bpm;
 	}
 /*
 	set bpm (bpm) {

@@ -609,14 +609,17 @@ function fileReader() {
 
 	newChart.readChart(path);
 
-	//let notes = newChart.getDiffsInfo();
-
-	//console.log(notes);
-
+	var songInfo = newChart.getSongInfo();
+	var syncTrack = newChart.getSyncInfo();
 	var events = newChart.getEventInfo();
+	var notes = newChart.getDiffsInfo();
+
 	console.log(events);
-	console.log(events[0]);
-	console.log(events[0].tick);
+	console.log(songInfo);
+	console.log(syncTrack);
+	console.log(notes);
+//	console.log(events[0]);
+//	console.log(events[0].tick);
 }
 
 

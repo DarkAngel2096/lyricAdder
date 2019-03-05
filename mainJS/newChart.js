@@ -31,7 +31,7 @@ var notesIsChanged;
 var objectSongInfo;
 var objectSyncInfo;
 var objectEventInfo;
-var objectNotesInfo;
+var objectNotesInfo = {};
 
 // variables to store the arrays of the last time the chart was read
 var oldSong;
@@ -125,6 +125,7 @@ function readChart(path) {
 
 	// add the line count of the full chart file for ease of use in the splitting process
 	indices.push(fullChartFile.length);
+	console.log(indices);
 
 	// just check if any tag was found (test against 1 because the full length push)
 	if (indices.length == 1) {
@@ -137,11 +138,14 @@ function readChart(path) {
 
 	// slicing out the needed parts for each tag type, except difficulties which just get pushed into one array
 	for (var i = 0; i < indices.length - 1; i++) {
-		switch (fullChartFile[indices[i]]) {
-			case "[Song]": chartSongInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
-			case "[SyncTrack]": chartSyncInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
-			case "[Events]": chartEventInfo = fullChartFile.slice(indices[i], indices[i + 1]); break;
+		switch (fullChartFile[indices[i]].trim()) {
+			case "[Song]": chartSongInfo = fullChartFile.slice(indices[i], indices[i + 1]); console.log("[Song] found"); break;
+			case "[SyncTrack]": chartSyncInfo = fullChartFile.slice(indices[i], indices[i + 1]); console.log("[SyncTrack] found"); break;
+			case "[Events]": chartEventInfo = fullChartFile.slice(indices[i], indices[i + 1]); console.log("[Events] found"); break;
 			default: {
+
+				console.log("Diff found: " + fullChartFile[indices[i]]);
+
 				var tempReturn = testInstAndDiff(fullChartFile[indices[i]]);
 
 				if (tempReturn.Difficulty && tempReturn.Instrument) {
@@ -168,6 +172,7 @@ function readChart(path) {
 	console.log("Notes: " + notesIsChanged);
 
 	chartLastModified = fs.statSync(path).mtimeMs;
+	console.log(chartDiffsInfo);
 
 	console.log("Reading done in: " + (Date.now() - startTime) + "ms.");
 }
@@ -234,6 +239,13 @@ function testTagsChanged() {
 
 // test function for song, synctrack and events tags as they are only single dimension arrays this will work
 function testFunc(newArr, oldArr) {
+	if (!newArr) {
+		// log problems with the new array
+		console.log(newArr);
+		throw new Error("Something odd going on");
+		return;
+	}
+
 	for (var i = 0; i < newArr.length; i++) {
 		if (oldArr == undefined) {
 			return true;
@@ -290,8 +302,7 @@ function getSongInfo() {
 
 	if (songInfoIsChanged) {
 		console.log("Song info was changed");
-		objectSongInfo = createObjects(chartSongInfo);
-		//objectSongInfo = JSON.parse(JSON.stringify(createObjects(chartSongInfo)));
+		objectSongInfo = gatherSongInfo(chartSongInfo);
 	}
 
 	console.log("done and returning: " + (Date.now() - startSongTime) + "ms.");
@@ -348,9 +359,10 @@ function getDiffsInfo() {
 	var tempInst = Object.keys(chartDiffsInfo);
 	var tempDiffsCount = 0;
 
-	for (var i = 0; i < tempInst.length; i++) {
-		var tempDiffs = Object.keys(chartDiffsInfo[tempInst[i]]);
-		if (tempDiffs > 0) {
+	for (let i = 0; i < tempInst.length; i++) {
+		let tempDiffs = Object.keys(chartDiffsInfo[tempInst[i]]);
+
+		if (tempDiffs.length > 0) {
 			tempDiffsCount += tempDiffs.length;
 		}
 	}
@@ -363,28 +375,87 @@ function getDiffsInfo() {
 
 	if (notesIsChanged) {
 		console.log("Notes info was changed");
+		objectNotesInfo = {};
 
-		// need to change this still
-		//createObjects(chartDiffsInfo);
+		for (let i = 0; i < tempInst.length; i++) {
+			let tempDiffs = Object.keys(chartDiffsInfo[tempInst[i]]);
+
+			objectNotesInfo[tempInst[i]] = {};
+
+			for (let j = 0; j < tempDiffs.length; j++) {
+				objectNotesInfo[tempInst[i]][tempDiffs[j]] = createObjects(chartDiffsInfo[tempInst[i]][tempDiffs[j]]);
+			}
+		}
 	}
 
 	console.log("done and returning: " + (Date.now() - startDiffsTime) + "ms.");
-	return chartDiffsInfo;
+	return objectNotesInfo;
 }
 
-// function to create objects for Song, SyncTrack and Events tags
+// function to gather data from the Song tag
+function gatherSongInfo(info) {
+	var song = "";
+	var artist = "";
+	var album = "";
+	var year = 0;
+	var genre = "";
+	var charter = "";
+
+	for (var i = 2; i < info.length - 1; i++) {
+		let tempSplit = info[i].trim().split(" ").map(line => line.trim());
+
+		switch (tempSplit[0]) {
+			case "Name": {
+				song = tempSplit.slice(2, tempSplit.length).join(" ").replace(/[^\w\s]/g, "");
+				break;
+			}
+			case "Artist": {
+				artist = tempSplit.slice(2, tempSplit.length).join(" ").replace(/[^\w\s]/g, "");
+				break;
+			}
+			case "Album": {
+				album = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
+				break;
+			}
+			case "Year": {
+			 	year = parseInt(tempSplit[3]);
+			   	break;
+			}
+			case "Genre": {
+				genre = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
+				break;
+			}
+			case "Charter": {
+				charter = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
+				break;
+			}
+		}
+	}
+
+	if (song == "" && artist == "") {
+		song = "No song name";
+		let tempDate = new Date();
+
+		artist = tempDate.getDate() + "-" + (tempDate.getMonth() + 1);
+	}
+
+	return new SongInfo(song, artist, album, year, genre, charter);
+}
+
+// function to create objects for SyncTrack and Events tags
 function createObjects(infoArr) {
 
 	var returnArray = [];
+
+	var chordArray = [];
+	var numberOfNotes = 0;
 
 	var toForce = false;
 	var toTap = false;
 	var chordTick = 0;
 
 	for (var i = 0; i < infoArr.length; i++) {
-		var lineInfo = infoArr[i].substring(0, infoArr[i].length - 1).trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
-
-		//console.log(lineInfo);
+		var lineInfo = infoArr[i].substring(0, infoArr[i].length).trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
 
 		if (lineInfo.length != 1) {
 			lineInfo[0] = parseInt(lineInfo[0]);
@@ -393,32 +464,117 @@ function createObjects(infoArr) {
 				case "N": {
 					lineInfo[2] = parseInt(lineInfo[2]);
 
+					console.log(lineInfo);
+
+
+					/*
+					lineInfo[2] = parseInt(lineInfo[2]);
+
+					// check if it's part of a bunch of events with the same tick (also taking taps and forces)
+					if (lineInfo[2] == chordTick) {
+						//console.log("pushed: " + lineInfo + " to chord array");
+						chordArray.push(lineInfo);
+					} else if (lineInfo[2] != chordTick) {
+						if (chordArray.length > 1) {
+							for (var j = 0; j < 2; j++) {
+								for (var k = 0; k < chordArray.length; k++) {
+									switch (j) {
+										case 0: {
+											switch (chordArray[k][2]) {
+												case "5": {
+													toForce = true;
+													break;
+												}
+												case "6": {
+													toTap = true;
+													break;
+												}
+												case "0":
+												case "1":
+												case "2":
+												case "3":
+												case "4":
+												case "7":
+												case "8": {
+													numberOfNotes++;
+													break;
+												}
+											}
+											break;
+										}
+										case 1: {
+											switch (chordArray[k][2]) {
+												case "0":
+												case "1":
+												case "2":
+												case "3":
+												case "4":
+												case "7":
+												case "8": {
+													if (numberOfNotes > 1) {
+														returnArray.push(new Note(chordArray[k][0], chordArray[k][2], toForce, toTap, true, parseInt(chordArray[k][3])));
+													} else {
+														returnArray.push(new Note(chordArray[k][0], chordArray[k][2], toForce, toTap, false, parseInt(chordArray[k][3])));
+													}
+													break;
+												}
+											}
+											break;
+										}
+									}
+								}
+							}
+
+							toForce = false;
+							toTap = false;
+							numberOfNotes = 0;
+
+							chordArray = [];
+						} else {
+							returnArray.push(new Note(lineInfo[0], lineInfo[2], false, false, false, parseInt(lineInfo[3])));
+						}
+
+						chordArray.push(lineInfo);
+						chordTick = lineInfo[0];
+					}
+
+					break;*/
+
+					/*				// IS NOT WORKING PROPERLY
+					lineInfo[2] = parseInt(lineInfo[2]);
+
 					switch (lineInfo[2]) {
-						case 0:
-						case 1:
-						case 2:
-						case 3:
-						case 4:
-						case 7:
-						case 8: {
+						case 0:			// green		// white 1
+						case 1:			// red			// white 2
+						case 2:			// yellow		// white 3
+						case 3:			// blue			// black 1
+						case 4:			// orange		// black 2
+						case 7:			// open			// open
+						case 8: {		// not used		// black 3
 							if (chordTick == lineInfo[0]) {
-								returnArray.push(lineInfo[0], lineInfo[2], toForce, toTap, true, parseInt(lineInfo[3]));
+								returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, true, parseInt(lineInfo[3])));
 							} else {
-								returnArray.push(lineInfo[0], lineInfo[2], toForce, toTap, false, parseInt(lineInfo[3]));
+								returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, false, parseInt(lineInfo[3])));
 							}
 							chordTick = lineInfo[0];
 
 							toForce = false;
 							toTap = false;
+
+							break;
 						}
-						case 5: {
+						case 5: {		// force		// force
 							toForce = true;
+
+							break;
 						}
-						case 6: {
+						case 6: {		// tap			// tap
 							toTap = true;
+
+							break;
 						}
 					}
-					break;
+					*/
 				}
 				case "S": {
 					returnArray.push(new StarPower(lineInfo[0], parseInt(lineInfo[3])));
@@ -437,8 +593,7 @@ function createObjects(infoArr) {
 					break;
 				}
 				case "E": {
-
-					console.log(lineInfo);
+					lineInfo[2] = lineInfo[2].replace(/[^\w\s]/g, "");
 
 					switch (lineInfo[2]) {
 						case "solo": {
