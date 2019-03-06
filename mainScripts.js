@@ -278,7 +278,7 @@ function readAndModifyEvents() {
 	//console.log(tempEventArray[tempEventArray.length - 1]);
 
 	for (var i = tempEventArray.length - 1; i >= 0; i--) {
-		if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
+		if (!tempEventArray[i].match(/ = E "(phrase_start|phrase_end|lyric |Default)"/)) {
 			//console.log("removing: " + tempEventArray[i]);
 
 			tempEventArray.splice(i, 1);
@@ -448,7 +448,9 @@ function getLyricsFromChart() {
 			var tempString = "";
 
 			for (var j = 0; j < eventsPhraseArray[i].length; j++) {
-				var temp = eventsPhraseArray[i][j].split("lyric ")[1];
+				var temp = eventsPhraseArray[i][j]
+					.replace(`"Default"`, `"lyric "`)
+					.split("lyric ")[1];
 
 				temp = temp.substring(0, temp.length - 1);
 
