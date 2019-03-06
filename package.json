@@ -1,33 +1,33 @@
 {
-  "name": "lyricadder",
-  "productName": "lyricadder",
-  "version": "1.0.1",
-  "description": "Simple tool to add lyrics to .chart files",
-  "main": "main.js",
-  "scripts": {
-	"start": "electron .",
-	"test": "echo \"Error: no test specified\" && exit 1",
-	"package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-	"package-win": "electron-packager . lyricadder --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"LyricAdder\"",
-	"package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
-  },
-  "repository": {
-	"type": "git",
-	"url": "git+https://github.com/DarkAngel2096/lyricAdder.git"
-  },
-  "author": "DarkAngel2096",
-  "license": "ISC",
-  "bugs": {
-	"url": "https://github.com/DarkAngel2096/lyricAdder/issues"
-  },
-  "homepage": "https://github.com/DarkAngel2096/lyricAdder#readme",
-  "dependencies": {
-	"dataurl": "^0.1.0",
-	"jquery": "^3.3.1",
-	"twitch-js": "^1.2.15"
-  },
-  "devDependencies": {
-	"electron": "^3.0.2",
-	"electron-packager": "^12.2.0"
-  }
+ "name": "lyricadder",
+ "productName": "lyricadder",
+ "version": "1.0.1",
+ "description": "Simple tool to add lyrics to .chart files",
+ "main": "main.js",
+ "scripts": {
+  "start": "electron .",
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+  "package-win": "electron-packager . lyricadder --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"LyricAdder\"",
+  "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/DarkAngel2096/lyricAdder.git"
+ },
+ "author": "DarkAngel2096",
+ "license": "ISC",
+ "bugs": {
+  "url": "https://github.com/DarkAngel2096/lyricAdder/issues"
+ },
+ "homepage": "https://github.com/DarkAngel2096/lyricAdder#readme",
+ "dependencies": {
+  "dataurl": "^0.1.0",
+  "jquery": "^3.3.1",
+  "twitch-js": "^1.2.15"
+ },
+ "devDependencies": {
+  "electron": "^3.0.2",
+  "electron-packager": "^12.2.0"
+ }
 }

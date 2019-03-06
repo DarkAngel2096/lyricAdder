@@ -16,3 +16,5 @@ release-builds/
 
 #ignore other stuffs folder
 other-stuff/
+
+node_modules
