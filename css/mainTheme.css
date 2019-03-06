@@ -9,6 +9,9 @@ html, body {
 	background: #252526;
 	color: #eee;
 }
+.dark-mode #sidebar-wrapper {
+	background: #444;
+}
 
 #wrapper.toggled {
 	padding-left: 150px;
@@ -31,6 +34,20 @@ html, body {
 
 #page-content-wrapper {
 	position: absolute;
+}
+
+.lyrics-container {
+	display: flex;
+	flex-direction: row;
+}
+
+#lyrics-status {
+	width: 3em;
+	height: 400px;
+	overflow: hidden;
+	text-align: right;
+	margin-right: .5em;
+	margin-top: .7em;
 }
 
 #lyricsInputArea {

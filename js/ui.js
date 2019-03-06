@@ -24,10 +24,23 @@ $(".sideButton").click(function (e) {
 	}
 });
 
+// Save dark mode across executions
+const isDarkMode = !!localStorage.getItem("darkMode");
+if (isDarkMode) {
+	document.body.classList.add("dark-mode");
+	document.getElementById("dark-mode-toggle").checked = true;
+}
 $("#dark-mode-toggle").click(e => {
 	if (e.target.checked) {
 		document.body.classList.add("dark-mode");
+		localStorage.setItem("darkMode", "1");
 	} else {
 		document.body.classList.remove("dark-mode");
+		localStorage.removeItem("darkMode");
 	}
+});
+
+// Sync lyrics status scroll with textarea
+$("#lyricsInputArea").scroll(e => {
+	document.getElementById("lyrics-status").scrollTop = e.target.scrollTop;
 });

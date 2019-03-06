@@ -406,6 +406,8 @@ function testLyricEventsAndSyllables() {
 		nbWordsChart: (eventsPhraseArray[i] || []).length,
 		nbWordsLyrics: (lyricsInputArray[i] || []).length
 	}));
+
+	// Update the textarea line highlight indicator
 	global.updateLinedTextArea({
 		selectedLines: lines
 			.filter(({
@@ -413,6 +415,21 @@ function testLyricEventsAndSyllables() {
 			}) => nbWordsLyrics != nbWordsChart)
 			.map(({ index }) => index)
 	});
+
+	// Update the textarea status side container
+	const textAreaLines = document.getElementById("lyricsInputArea").value.split("\n");
+	let lyricStatus = "";
+	let lyricStatusIndex = 0;
+	for (line of textAreaLines) {
+		if (line) {
+			const { nbWordsLyrics, nbWordsChart } = lines[lyricStatusIndex];
+			lyricStatus += `${nbWordsLyrics}/${nbWordsChart}`;
+			lyricStatusIndex++;
+		}
+		lyricStatus += "\n";
+	}
+	document.getElementById("lyrics-status").innerHTML = lyricStatus;
+	document.getElementById("lyrics-status").scrollTop = document.getElementById("lyricsInputArea").scrollTop;
 
 	for (var i = 0; i < morePhrases; i++) {
 		var newSpan = document.createElement("span");
