@@ -94,7 +94,15 @@ function writeLyrics() {
 	}
 	changeFields();
 }
-$("#lyricsInputArea").on("input propertychange", writeLyrics);
+
+// Debounce lyric information updates
+// (it will wait x milliseconds before performing the update)
+let timeout;
+const DEBOUNCE_DELAY = 500;
+$("#lyricsInputArea").on("input propertychange", () => {
+	if (timeout) clearTimeout(timeout);
+	timeout = setTimeout(() => writeLyrics(), DEBOUNCE_DELAY);
+});
 
 // Button to restore the last lyric input from the config file
 function restoreFromConfig() {
