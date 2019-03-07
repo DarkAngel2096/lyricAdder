@@ -577,7 +577,7 @@ function modifyEventsAndOriginalChart() {
 	for (var i = 0; i < eventsPhraseArray.length; i++) {
 		for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 			const evt = eventsPhraseArray[i][j]
-				.replace(/"Default"|"lyric "/, `"lyric ${lyricsInputArray[i][j]}"`)
+				.replace(/E ("Default|"lyric )/, `"lyric ${lyricsInputArray[i][j]}`)
 			modifiedLyricEventArray.push(evt);
 		}
 	}
@@ -587,7 +587,7 @@ function modifyEventsAndOriginalChart() {
 
 	for (var i = 0; i < eventsAll.length; i++) {
 		if (!modifiedLyricEventArray.length) break;
-		if (eventsAll[i].match(/E ("lyric "|"Default")/)) {
+		if (eventsAll[i].match(/E ("lyric |"Default")/)) {
 			found++;
 			eventsAll[i] = modifiedLyricEventArray.shift();
 		} else {
