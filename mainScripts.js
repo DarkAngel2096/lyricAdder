@@ -417,7 +417,7 @@ function testLyricEventsAndSyllables() {
 	});
 
 	// Update the textarea status side container
-	const textAreaLines = document.getElementById("lyricsInputArea").value.split("\n");
+	const textAreaLines = document.getElementById("lyricsInputArea").value.trim().split("\n");
 	let lyricStatus = "";
 	let lyricStatusIndex = 0;
 	for (line of textAreaLines) {
