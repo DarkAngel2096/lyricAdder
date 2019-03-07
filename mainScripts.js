@@ -576,8 +576,9 @@ function modifyEventsAndOriginalChart() {
 
 	for (var i = 0; i < eventsPhraseArray.length; i++) {
 		for (var j = 0; j < eventsPhraseArray[i].length; j++) {
-			//console.log(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
-			modifiedLyricEventArray.push(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
+			const evt = eventsPhraseArray[i][j]
+				.replace(/"Default"|"lyric "/, `"lyric ${lyricsInputArray[i][j]}"`)
+			modifiedLyricEventArray.push(evt);
 		}
 	}
 
@@ -585,13 +586,12 @@ function modifyEventsAndOriginalChart() {
 	var extra = 0;
 
 	for (var i = 0; i < eventsAll.length; i++) {
-		if (modifiedLyricEventArray.length > 0) {
-			if (eventsAll[i].includes(modifiedLyricEventArray[0].substring(0, (modifiedLyricEventArray[0].indexOf("E \"lyric") + 9)))) {
-				found++;
-				eventsAll[i] = modifiedLyricEventArray.shift();
-			} else {
-				extra++;
-			}
+		if (!modifiedLyricEventArray.length) break;
+		if (eventsAll[i].match(/E ("lyric "|"Default")/)) {
+			found++;
+			eventsAll[i] = modifiedLyricEventArray.shift();
+		} else {
+			extra++;
 		}
 	}
 
