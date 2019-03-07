@@ -48,6 +48,8 @@ html, body {
 	text-align: right;
 	margin-right: .5em;
 	margin-top: .7em;
+	padding-bottom: 30em;
+	box-sizing: border-box;
 }
 
 #lyricsInputArea {

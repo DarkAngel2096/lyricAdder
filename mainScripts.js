@@ -428,6 +428,10 @@ function testLyricEventsAndSyllables() {
 		}
 		lyricStatus += "\n";
 	}
+	for (let i = lyricStatusIndex; i < lines.length; i++) {
+		const { nbWordsChart } = lines[i];
+		lyricStatus += `-/${nbWordsChart}\n`;
+	}
 	document.getElementById("lyrics-status").innerHTML = lyricStatus;
 	document.getElementById("lyrics-status").scrollTop = document.getElementById("lyricsInputArea").scrollTop;
 
@@ -467,7 +471,7 @@ function getLyricsFromChart() {
 	//console.log(eventsPhraseArray);
 
 	if (eventsPhraseArray.length == 0) {
-		customErrorMessage(true, "notice", "No lyric events found form the chart");
+		customErrorMessage(true, "notice", "No lyric events found in the chart");
 	} else if (eventsPhraseArray.length != 0) {
 		for (var i = 0; i < eventsPhraseArray.length; i++) {
 			var tempString = "";
@@ -486,7 +490,8 @@ function getLyricsFromChart() {
 				}
 			}
 
-			lyricsPerPhrase.push(tempString.trim());
+			tempString = tempString.trim();
+			if (tempString) lyricsPerPhrase.push(tempString);
 		}
 	}
 
