@@ -260,10 +260,10 @@ function readSongInfo() {
 	var tempSongName, tempArtistName;
 	for (var i = 0; i < chartInfo.length; i++) {
 		if (chartInfo[i].includes("Name =")) {
-			tempSongName = chartInfo[i].split("\"")[1];
+			tempSongName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
 		if (chartInfo[i].includes("Artist =")) {
-			tempArtistName = chartInfo[i].split("\"")[1];
+			tempArtistName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
 	}
 	var chartName = tempSongName + " by " + tempArtistName;
@@ -286,7 +286,7 @@ function readAndModifyEvents() {
 	//console.log(tempEventArray[tempEventArray.length - 1]);
 
 	for (var i = tempEventArray.length - 1; i >= 0; i--) {
-		if (!tempEventArray[i].match(/ = E "(phrase_start|phrase_end|lyric |Default)"/)) {
+		if (!tempEventArray[i].match(/ = E "(phrase_start|phrase_end|lyric.*|Default)"/)) {
 			//console.log("removing: " + tempEventArray[i]);
 
 			tempEventArray.splice(i, 1);
@@ -303,6 +303,30 @@ function readAndModifyEvents() {
 
 	tempPhraseStartTicks.reverse();
 	tempPhraseEndTicks.reverse();
+
+	let tempTick = 0;
+	let outputMessage = "";
+
+	for (let i = 0; i < tempPhraseStartTicks.length; i++) {
+		if (tempPhraseStartTicks[i] == tempTick) {
+			outputMessage = outputMessage + tempTick.toString() + " start, ";
+		}
+
+		tempTick = tempPhraseStartTicks[i];
+	}
+
+	tempTick = 0;
+	for (let i = 0; i < tempPhraseEndTicks.length; i++) {
+		if (tempPhraseEndTicks[i] == tempTick) {
+			outputMessage = outputMessage + tempTick.toString() + " end, ";
+		}
+
+		tempTick = tempPhraseEndTicks[i];
+	}
+
+	if (outputMessage.length > 0) {
+		customErrorMessage(true, "error", "Double phrase events found at ticks: " + outputMessage);
+	}
 
 	var startCount = 0;
 
@@ -468,8 +492,6 @@ function testLyricEventsAndSyllables() {
 function getLyricsFromChart() {
 	var lyricsPerPhrase = [];
 
-	//console.log(eventsPhraseArray);
-
 	if (eventsPhraseArray.length == 0) {
 		customErrorMessage(true, "notice", "No lyric events found in the chart");
 	} else if (eventsPhraseArray.length != 0) {
@@ -479,7 +501,7 @@ function getLyricsFromChart() {
 			for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 				var temp = eventsPhraseArray[i][j]
 					.replace(`"Default"`, `"lyric "`)
-					.split("lyric ")[1];
+					.split(`"lyric`)[1].trim();
 
 				temp = temp.substring(0, temp.length - 1);
 
@@ -577,7 +599,7 @@ function modifyEventsAndOriginalChart() {
 	for (var i = 0; i < eventsPhraseArray.length; i++) {
 		for (var j = 0; j < eventsPhraseArray[i].length; j++) {
 			const evt = eventsPhraseArray[i][j]
-				.replace(/E ("Default|"lyric )/, `"lyric ${lyricsInputArray[i][j]}`)
+                .replace(/E ("Default"|"lyric.*)/, `E "lyric ${lyricsInputArray[i][j]}"`);
 			modifiedLyricEventArray.push(evt);
 		}
 	}
@@ -611,7 +633,7 @@ function overwriteOriginalFile() {
 	}
 }
 
-
+/*
 
 // temporary function for data gathering
 function gatherChartData() {
@@ -652,7 +674,7 @@ function fileReader() {
 	console.log(notes);
 //	console.log(events[0]);
 //	console.log(events[0].tick);
-}
+}*/
 
 
 
