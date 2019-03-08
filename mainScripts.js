@@ -94,7 +94,15 @@ function writeLyrics() {
 	}
 	changeFields();
 }
-$("#lyricsInputArea").on("input propertychange", writeLyrics);
+
+// Debounce lyric information updates
+// (it will wait x milliseconds before performing the update)
+let timeout;
+const DEBOUNCE_DELAY = 500;
+$("#lyricsInputArea").on("input propertychange", () => {
+	if (timeout) clearTimeout(timeout);
+	timeout = setTimeout(() => writeLyrics(), DEBOUNCE_DELAY);
+});
 
 // Button to restore the last lyric input from the config file
 function restoreFromConfig() {
@@ -278,7 +286,7 @@ function readAndModifyEvents() {
 	//console.log(tempEventArray[tempEventArray.length - 1]);
 
 	for (var i = tempEventArray.length - 1; i >= 0; i--) {
-		if (!tempEventArray[i].includes(" = E \"phrase_start\"") && !tempEventArray[i].includes(" = E \"phrase_end\"") && !tempEventArray[i].includes(" = E \"lyric ")) {
+		if (!tempEventArray[i].match(/ = E "(phrase_start|phrase_end|lyric |Default)"/)) {
 			//console.log("removing: " + tempEventArray[i]);
 
 			tempEventArray.splice(i, 1);
@@ -398,6 +406,8 @@ function testLyricEventsAndSyllables() {
 		nbWordsChart: (eventsPhraseArray[i] || []).length,
 		nbWordsLyrics: (lyricsInputArray[i] || []).length
 	}));
+
+	// Update the textarea line highlight indicator
 	global.updateLinedTextArea({
 		selectedLines: lines
 			.filter(({
@@ -405,6 +415,25 @@ function testLyricEventsAndSyllables() {
 			}) => nbWordsLyrics != nbWordsChart)
 			.map(({ index }) => index)
 	});
+
+	// Update the textarea status side container
+	const textAreaLines = document.getElementById("lyricsInputArea").value.trim().split("\n");
+	let lyricStatus = "";
+	let lyricStatusIndex = 0;
+	for (line of textAreaLines) {
+		if (line) {
+			const { nbWordsLyrics, nbWordsChart } = lines[lyricStatusIndex];
+			lyricStatus += `${nbWordsLyrics}/${nbWordsChart}`;
+			lyricStatusIndex++;
+		}
+		lyricStatus += "\n";
+	}
+	for (let i = lyricStatusIndex; i < lines.length; i++) {
+		const { nbWordsChart } = lines[i];
+		lyricStatus += `-/${nbWordsChart}\n`;
+	}
+	document.getElementById("lyrics-status").innerHTML = lyricStatus;
+	document.getElementById("lyrics-status").scrollTop = document.getElementById("lyricsInputArea").scrollTop;
 
 	for (var i = 0; i < morePhrases; i++) {
 		var newSpan = document.createElement("span");
@@ -442,13 +471,15 @@ function getLyricsFromChart() {
 	//console.log(eventsPhraseArray);
 
 	if (eventsPhraseArray.length == 0) {
-		customErrorMessage(true, "notice", "No lyric events found form the chart");
+		customErrorMessage(true, "notice", "No lyric events found in the chart");
 	} else if (eventsPhraseArray.length != 0) {
 		for (var i = 0; i < eventsPhraseArray.length; i++) {
 			var tempString = "";
 
 			for (var j = 0; j < eventsPhraseArray[i].length; j++) {
-				var temp = eventsPhraseArray[i][j].split("lyric ")[1];
+				var temp = eventsPhraseArray[i][j]
+					.replace(`"Default"`, `"lyric "`)
+					.split("lyric ")[1];
 
 				temp = temp.substring(0, temp.length - 1);
 
@@ -459,7 +490,8 @@ function getLyricsFromChart() {
 				}
 			}
 
-			lyricsPerPhrase.push(tempString.trim());
+			tempString = tempString.trim();
+			if (tempString) lyricsPerPhrase.push(tempString);
 		}
 	}
 
@@ -544,8 +576,9 @@ function modifyEventsAndOriginalChart() {
 
 	for (var i = 0; i < eventsPhraseArray.length; i++) {
 		for (var j = 0; j < eventsPhraseArray[i].length; j++) {
-			//console.log(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
-			modifiedLyricEventArray.push(eventsPhraseArray[i][j].substring(0, (eventsPhraseArray[i][j].indexOf("E \"lyric") + 9)) + lyricsInputArray[i][j].toString() + "\"");
+			const evt = eventsPhraseArray[i][j]
+				.replace(/E ("Default|"lyric )/, `"lyric ${lyricsInputArray[i][j]}`)
+			modifiedLyricEventArray.push(evt);
 		}
 	}
 
@@ -553,13 +586,12 @@ function modifyEventsAndOriginalChart() {
 	var extra = 0;
 
 	for (var i = 0; i < eventsAll.length; i++) {
-		if (modifiedLyricEventArray.length > 0) {
-			if (eventsAll[i].includes(modifiedLyricEventArray[0].substring(0, (modifiedLyricEventArray[0].indexOf("E \"lyric") + 9)))) {
-				found++;
-				eventsAll[i] = modifiedLyricEventArray.shift();
-			} else {
-				extra++;
-			}
+		if (!modifiedLyricEventArray.length) break;
+		if (eventsAll[i].match(/E ("lyric |"Default")/)) {
+			found++;
+			eventsAll[i] = modifiedLyricEventArray.shift();
+		} else {
+			extra++;
 		}
 	}
 
