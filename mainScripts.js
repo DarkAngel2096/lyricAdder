@@ -16,6 +16,8 @@ var toggleForLyricsAndSyllables = false;
 
 var modifiedOutputFile;
 
+var lastModifiedChartFile = 0;
+
 // Global HTML element variables
 document.getElementById("version").innerHTML = config.version;
 
@@ -196,6 +198,13 @@ function changeFields() {
 
 // Read the chart file selected and store things in variables
 function readAndSeparateChartFile() {
+	let currentModified = fs.statSync(config.pathToChartFile).mtimeMs;
+
+	if (currentModified == lastModifiedChartFile) {
+		return;
+	}
+	lastModifiedChartFile = currentModified;
+
 	difficulties = [];
 	fullChart = fs.readFileSync(config.pathToChartFile, "utf8").trim().split("\r\n");
 
@@ -257,8 +266,8 @@ function readAndSeparateChartFile() {
 // Reading the main song info and updating the HTML elements
 // Return "songName by artistName"
 function readSongInfo() {
-	var tempSongName, tempArtistName;
-	for (var i = 0; i < chartInfo.length; i++) {
+	let tempSongName, tempArtistName;
+	for (let i = 0; i < chartInfo.length; i++) {
 		if (chartInfo[i].includes("Name =")) {
 			tempSongName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
@@ -266,7 +275,7 @@ function readSongInfo() {
 			tempArtistName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
 	}
-	var chartName = tempSongName + " by " + tempArtistName;
+	let chartName = tempSongName + " by " + tempArtistName;
 
 	return chartName;
 }
@@ -274,73 +283,83 @@ function readSongInfo() {
 // Reading events list and modifying a copy of it to only have lyric events in an array one phrase in one index (2D array)
 // Return count of lyric events
 function readAndModifyEvents() {
-	var tempEventArray = eventsAll.slice();
+	let tempEventArray = eventsAll.slice();
 	eventsPhraseArray = [];
 
-	var tempPhraseStartTicks = [];
-	var tempPhraseEndTicks = [];
+	let tempPhraseStartTicks = [];
+	let tempPhraseEndTicks = [];
 
-	var tempPhraseStartsIndexes = [];
-	var tempPhraseEndIndexes = [];
+	let tempPhraseStartsIndexes = [];
+	let tempPhraseEndIndexes = [];
 
-	//console.log(tempEventArray[tempEventArray.length - 1]);
+	let lastWasStart = false;
+	let lastWasEnd = false;
+	let currentTick = 0;
 
-	for (var i = tempEventArray.length - 1; i >= 0; i--) {
+	let outputWarningMessage = "";
+
+	for (let i = tempEventArray.length - 1; i >= 0; i--) {
 		if (!tempEventArray[i].match(/ = E "(phrase_start|phrase_end|lyric.*|Default)"/)) {
 			//console.log("removing: " + tempEventArray[i]);
 
 			tempEventArray.splice(i, 1);
+		} else if (tempEventArray[i].match(/ = E "(lyric.*|Default")/)) {
+			lastWasStart = false;
+			lastWasEnd = false;
 		} else if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
 			//console.log("copying to starts: " + tempEventArray[i]);
+			let tick = tempEventArray[i].split(" = ")[0].trim();
 
-			tempPhraseStartTicks.push(tempEventArray[i].split("=")[0].trim());
+			if (lastWasStart) {
+				outputWarningMessage = outputWarningMessage + " start: " + tick + ",";
+			}
+
+			if (tick == currentTick && (lastWasStart || lastWasEnd)) {
+				outputWarningMessage = outputWarningMessage + " on same tick: " + tick + ",";
+			}
+
+			lastWasStart = true;
+			currentTick = tick;
+
+			tempPhraseStartTicks.push(tick);
 		} else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
 			//console.log("copying to ends: " + tempEventArray[i]);
+			let tick = tempEventArray[i].split(" = ")[0].trim();
 
-			tempPhraseEndTicks.push(tempEventArray[i].split("=")[0].trim());
+			if (lastWasEnd) {
+				outputWarningMessage = outputWarningMessage + " end: " + tick + ",";
+			}
+
+			if (tick == currentTick && (lastWasStart || lastWasEnd)) {
+				outputWarningMessage = outputWarningMessage + " on same tick: " + tick + ",";
+			}
+			lastWasEnd = true;
+			currentTick = tick;
+
+			tempPhraseEndTicks.push(tick);
 		}
+	}
+
+	if (outputWarningMessage.length > 0) {
+		customErrorMessage(true, "error", "Multiple phrase events after one another found around: " + outputWarningMessage);
 	}
 
 	tempPhraseStartTicks.reverse();
 	tempPhraseEndTicks.reverse();
 
-	let tempTick = 0;
-	let outputMessage = "";
+	let startCount = 0;
 
-	for (let i = 0; i < tempPhraseStartTicks.length; i++) {
-		if (tempPhraseStartTicks[i] == tempTick) {
-			outputMessage = outputMessage + tempTick.toString() + " start, ";
-		}
+	for (let i = 0; i < tempEventArray.length; i++) {
 
-		tempTick = tempPhraseStartTicks[i];
-	}
-
-	tempTick = 0;
-	for (let i = 0; i < tempPhraseEndTicks.length; i++) {
-		if (tempPhraseEndTicks[i] == tempTick) {
-			outputMessage = outputMessage + tempTick.toString() + " end, ";
-		}
-
-		tempTick = tempPhraseEndTicks[i];
-	}
-
-	if (outputMessage.length > 0) {
-		customErrorMessage(true, "error", "Double phrase events found at ticks: " + outputMessage);
-	}
-
-	var startCount = 0;
-
-	for (var i = 0; i < tempEventArray.length; i++) {
-
-		var tempStartTick = Number(tempPhraseStartTicks[startCount]);
-		var tempEventTick = Number(tempEventArray[i].split("=")[0].trim());
+		let tempStartTick = Number(tempPhraseStartTicks[startCount]);
+		let tempEventTick = Number(tempEventArray[i].split("=")[0].trim());
 
 		//console.log("temp tick: iterator: " + startCount+ ", " + tempStartTick + ", temp array: iterator: " + i + ", " + tempEventTick);
 
 		if (tempStartTick == tempEventTick && !tempEventArray[i].includes("phrase_start") && tempEventArray[i + 1].includes("phrase_start")) {
 			//console.log("Same tick found between: " + tempEventArray[i] + " and " + tempEventArray[i + 1] + " on phrase: " + (startCount + 1));
 
-			var temp = tempEventArray.splice(i + 1, 1);
+			let temp = tempEventArray.splice(i + 1, 1);
 			tempEventArray.splice(i, 0, temp.toString());
 
 			startCount++;
@@ -350,7 +369,7 @@ function readAndModifyEvents() {
 		}
 	}
 
-	for (var i = 0; i < tempEventArray.length; i++) {
+	for (let i = 0; i < tempEventArray.length; i++) {
 		if (tempEventArray[i].includes(" = E \"phrase_start\"")) {
 			tempPhraseStartsIndexes.push(i);
 		} else if (tempEventArray[i].includes(" = E \"phrase_end\"")) {
@@ -358,9 +377,9 @@ function readAndModifyEvents() {
 		}
 	}
 
-	var endsUsed = 0;
+	let endsUsed = 0;
 
-	for (var i = 0; i < tempPhraseStartsIndexes.length; i++) {
+	for (let i = 0; i < tempPhraseStartsIndexes.length; i++) {
 		if (tempPhraseStartsIndexes[i + 1] > tempPhraseEndIndexes[endsUsed] || tempPhraseStartsIndexes[i + 1] == undefined) {
 			//console.log("from start to end");
 
@@ -372,9 +391,9 @@ function readAndModifyEvents() {
 		}
 	}
 
-	var lyricCount = 0;
+	let lyricCount = 0;
 
-	for (var i = 0; i < eventsPhraseArray.length; i++) {
+	for (let i = 0; i < eventsPhraseArray.length; i++) {
 		lyricCount += eventsPhraseArray[i].length;
 	}
 
