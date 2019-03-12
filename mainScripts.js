@@ -56,13 +56,13 @@ function customErrorMessage(active, messageType, message) {
 		HTMLErrorDiv.style.display = "block";
 
 		if (messageType == "error") {
-			HTMLErrorMessage.style.color = "red";
+			HTMLErrorMessage.setAttribute("class", "incorrect");
 			HTMLErrorMessage.innerHTML = "Error: " + message;
 		} else if (messageType == "notice") {
 			HTMLErrorMessage.style.color = "yellow";
 			HTMLErrorMessage.innerHTML = "Notice: " + message;
 		} else if (messageType == "completed") {
-			HTMLErrorMessage.style.color = "green";
+			HTMLErrorMessage.setAttribute("class", "correct");
 			HTMLErrorMessage.innerHTML = "Completed: " + message;
 		}
 	} else if (!active) {

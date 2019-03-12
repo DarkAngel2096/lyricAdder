@@ -199,13 +199,16 @@ function updatePreview() {
 			}
 
 			if (phraseNum > 0) {
-				phrases[phraseNum - 1].style.fontSize = "medium";
+				phrases[phraseNum - 1].setAttribute("class", "oldLyrics");
 			}
 
 			phrases[phraseNum].style.display = "block";
-			phrases[phraseNum].style.color = "red";
-			phrases[phraseNum].style.fontSize = "x-large";
-			phrases[phraseNum].children[0].style.color = "blue";
+			phrases[phraseNum].setAttribute("class", "currentLyrics");
+			phrases[phraseNum].children[0].setAttribute("class", "currentLine");
+
+			//phrases[phraseNum].style.color = "red";
+			//phrases[phraseNum].style.fontSize = "x-large";
+			//phrases[phraseNum].children[0].style.color = "blue";
 
 			if (phraseNum < HTMLMainLyricDiv.childElementCount - 1) {
 				phrases[phraseNum + 1].style.display = "block";
@@ -243,7 +246,8 @@ function updateSyllables() {
 		var syllableTime = lyricTimes2DArray[phraseNum - 1][syllableNum].toFixed(2);
 
 		if (elemTime === syllableTime) {
-			syllables[syllableNum].style.color = "blue";
+			syllables[syllableNum].setAttribute("class", "currentLine");
+			//syllables[syllableNum].style.color = "blue";
 
 			//console.log("Syllable: " + syllableNum + ". currentTime: " + elemTime + ", time at syllable: " + syllableTime);
 			syllableNum++;

@@ -15,20 +15,19 @@ html, body {
 .dark-mode .correct {
 	color: rgba(0, 255, 0, 1);
 }
-.dark-mode .incorrect {
-	color: rgba(255, 0, 0, 1);
+.dark-mode .incorrect , .dark-mode #noChartFile, .dark-mode #noLyrcisWritten{
+	color: rgba(255, 50, 50, 1);
 }
-.dark-mode #version {
+.dark-mode #version, .dark-mode .about, .dark-mode .sidebar-nav li a, .dark-mode .sidebar-nav li a:active, .dark-mode .sidebar-nav li a:focus{
 	color: rgba(255, 150, 0, 1);
 }
-.dark-mode .about {
-	color: rgba(255, 150, 0, 1);
+.dark-mode #chartName, .dark-mode #phraseCount, .dark-mode #lyricEventCount, .dark-mode #syllableCount, .dark-mode #phrasesAndLyrics {
+	color: rgba(100, 100, 200, 1);
 }
 
 #wrapper.toggled {
 	padding-left: 150px;
 }
-
 
 #sidebar-wrapper {
 	position: fixed;
@@ -71,24 +70,47 @@ html, body {
 }
 
 #chartName, #phraseCount, #lyricEventCount, #syllableCount, #phrasesAndLyrics {
-	color: rgba(100, 100, 200, 0.75)
+	color: rgba(100, 100, 200, 0.75);
 }
 
 #version {
 	color: rgb(255, 0, 0);
 }
 
+.dark-mode .mainLyrics {
+	font-size: 15px;
+	color: rgba(200, 100, 100, 1);
+}
+.dark-mode .currentLyrics {
+	font-size: 25px;
+	color: rgba(255, 150, 0, 1);
+}
+.dark-mode .currentLine {
+	color: rgba(150, 150, 0, 0.5);
+}
+
 .mainLyrics {
 	font-size: 15px;
-	color: green;
+	color: rgba(50, 50, 200, 1);
 }
+.oldLyrics {
+	font-size: 15px;
+}
+.currentLyrics {
+	font-size: 25px;
+	color: rgba(255, 100, 100, 1);
+}
+.currentLine {
+	color: rgba(50, 255, 0, 0.75);
+}
+
 
 .correct {
-	color: rgba(0, 255, 0, 0.5);
+	color: rgba(0, 255, 0, 0.75);
 }
 
-.incorrect {
-	color: rgba(255, 0, 0, 0.5);
+.incorrect, #noChartFile, #noLyrcisWritten{
+	color: rgba(255, 0, 0, 0.75);
 }
 
 .about {
@@ -105,7 +127,7 @@ html, body {
 
 .branding {
 	font-size: xx-large;
-	color: blue;
+	color: rgba(0, 0, 255, 1);
 	padding: 10px 0px;
 }
 
