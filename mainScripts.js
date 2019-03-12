@@ -483,17 +483,23 @@ function testLyricEventsAndSyllables() {
 
 		if (i >= lyricsInputArray.length) {
 			newSpan.innerHTML += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-0}";
-			newSpan.style.color = "red";
+
+			newSpan.setAttribute("class", "incorrect");
+			//newSpan.style.color = "red";
 		} else if (i >= eventsPhraseArray.length) {
 			newSpan.innerHTML += "{" + (i + 1) + ", 0-" + lyricsInputArray.length + "}";
-			newSpan.style.color = "red";
+
+			newSpan.setAttribute("class", "incorrect");
+			//newSpan.style.color = "red";
 		} else {
 			newSpan.innerHTML += "{" + (i + 1) + ", " + eventsPhraseArray[i].length + "-" + lyricsInputArray[i].length + "}";
 
 			if (eventsPhraseArray[i].length == lyricsInputArray[i].length) {
-				newSpan.style.color = "green";
+				newSpan.setAttribute("class", "correct");
+				//newSpan.style.color = "green";
 			} else {
-				newSpan.style.color = "red";
+				newSpan.setAttribute("class", "incorrect");
+				//newSpan.style.color = "red";
 			}
 		}
 

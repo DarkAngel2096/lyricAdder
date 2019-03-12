@@ -12,10 +12,23 @@ html, body {
 .dark-mode #sidebar-wrapper {
 	background: #444;
 }
+.dark-mode .correct {
+	color: rgba(0, 255, 0, 1);
+}
+.dark-mode .incorrect {
+	color: rgba(255, 0, 0, 1);
+}
+.dark-mode #version {
+	color: rgba(255, 150, 0, 1);
+}
+.dark-mode .about {
+	color: rgba(255, 150, 0, 1);
+}
 
 #wrapper.toggled {
 	padding-left: 150px;
 }
+
 
 #sidebar-wrapper {
 	position: fixed;
@@ -62,12 +75,20 @@ html, body {
 }
 
 #version {
-	color: rgb(255, 0, 0)
+	color: rgb(255, 0, 0);
 }
 
 .mainLyrics {
 	font-size: 15px;
 	color: green;
+}
+
+.correct {
+	color: rgba(0, 255, 0, 0.5);
+}
+
+.incorrect {
+	color: rgba(255, 0, 0, 0.5);
 }
 
 .about {
