@@ -604,12 +604,6 @@ function writeBackupOfOriginalChart() {
 
 	var backupFileName = tempSongName.replace(/ /g, "") + "_" + tempArtistName.replace(/ /g, "") + "_backup.chart";
 
-	if (backupFileName.includes(/[^\w\s]/g)) {
-		console.log("Backup file name constains illegal characters: " + backupFileName);
-		customErrorMessage(true, "error", "Backup file name contains illegal characters.");
-		return false;
-	}
-
 	fs.writeFileSync(config.pathToBackupFolder + "/" + backupFileName, fullChart.join("\r\n"), "utf8", function (err) {
 		if (err) {
 			console.log("Problems with writing the chart backup: " + err);

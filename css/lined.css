@@ -56,7 +56,7 @@
 }
 
 .linedwrap .codelines .lineno {
-  color: rgb(150, 150, 150);
+  color:#AAAAAA;
   padding-right: 0.5em;
   padding-top: 0.0em;
   text-align: right;
