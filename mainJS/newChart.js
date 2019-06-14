@@ -404,19 +404,21 @@ function gatherSongInfo(info) {
 	var year = 0;
 	var genre = "";
 	var charter = "";
+	var otherParts = [];
 
 	for (var i = 2; i < info.length - 1; i++) {
 		let tempSplit = info[i].trim().split(" ").map(line => line.trim());
 
 		console.log(tempSplit);
 
+
 		switch (tempSplit[0]) {
 			case "Name": {
-				song = tempSplit.slice(2, tempSplit.length).join(" ");
+				song = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
 				break;
 			}
 			case "Artist": {
-				artist = tempSplit.slice(2, tempSplit.length).join(" ");
+				artist = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
 				break;
 			}
 			case "Album": {
@@ -435,6 +437,10 @@ function gatherSongInfo(info) {
 				charter = tempSplit.slice(2, tempSplit.length).join(" ").slice(1, -1);
 				break;
 			}
+			default: {
+				otherParts.push(tempSplit.join(" "));
+				break;
+			}
 		}
 	}
 
@@ -442,10 +448,10 @@ function gatherSongInfo(info) {
 		song = "No song name";
 		let tempDate = new Date();
 
-		artist = tempDate.getDate() + "-" + (tempDate.getMonth() + 1);
+		artist = tempDate.getDate() + "." + (tempDate.getMonth() + 1);
 	}
 
-	return new SongInfo(song, artist, album, year, genre, charter);
+	return new SongInfo(song, artist, album, year, genre, charter, otherParts);
 }
 
 // function to create objects for SyncTrack and Events tags
@@ -460,10 +466,13 @@ function createObjects(infoArr) {
 	var toTap = false;
 	var chordTick = 0;
 
+	var noteCount = 0;
+
 	// loop through the whole info array and look at each index
 	for (var i = 0; i < infoArr.length; i++) {
-		var lineInfo = infoArr[i].substring(0, infoArr[i].length).trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
+		var lineInfo = infoArr[i]/*.substring(0, infoArr[i].length)*/.trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
 
+		// check if the line has some useful info to it
 		if (lineInfo.length != 1) {
 			lineInfo[0] = parseInt(lineInfo[0]);
 
@@ -472,10 +481,11 @@ function createObjects(infoArr) {
 					lineInfo[2] = parseInt(lineInfo[2]);
 
 					console.log("Note Found: " + lineInfo);
+					noteCount++;
 
 					if (lineInfo[0] == chordTick) {
 						// if the line has the same tick as the one before
-						console.log("chord found: " + lineInfo + ", tick: " + chordTick);
+						//console.log("chord found: " + lineInfo + ", tick: " + chordTick);
 
 						chordArray.push(lineInfo);
 					} else {
@@ -639,6 +649,8 @@ function createObjects(infoArr) {
 						}
 					}
 					*/
+
+					break;
 				}
 				case "S": { // star power tag
 					returnArray.push(new StarPower(lineInfo[0], parseInt(lineInfo[3])));
@@ -702,6 +714,8 @@ function createObjects(infoArr) {
 			}
 		}
 	}
+
+	console.log("Note Count: " + noteCount);
 
 	return returnArray;
 }
