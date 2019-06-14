@@ -98,6 +98,7 @@ function readChart(path) {
 					console.log(fullChartFile[indices[i]]);
 				} else {
 					// log other problems
+					console.log("Other stuff going on...");
 				}
 			}
 		}

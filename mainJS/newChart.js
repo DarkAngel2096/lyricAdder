@@ -79,7 +79,7 @@ function readChart(path) {
 	// check if it's a .chart file
 	if (!path.endsWith(".chart")) {
 		// log incorrect file type
-		console.log("Not a .chart file, took to read: " + (Date.now() - startTime) + "ms.");
+		console.log("Not a .chart file " + path + ", took to read: " + (Date.now() - startTime) + "ms.");
 		return;
 	}
 
@@ -158,6 +158,8 @@ function readChart(path) {
 					console.log(fullChartFile[indices[i]]);
 				} else {
 					// log other problems
+					console.log("Other interesting stuff found");
+					console.log(fullChartFile[indices[i]]);
 				}
 			}
 		}
@@ -184,6 +186,7 @@ function testInstAndDiff(tempInd) {
 
 	var returnObject = {}
 
+	// difficulty check
 	for (var i = 0; i < difficulties.length; i++) {
 		if (tempInd.startsWith(difficulties[i])) {
 			returnObject.Difficulty = difficulties[i].substring(1).trim();
@@ -191,6 +194,7 @@ function testInstAndDiff(tempInd) {
 		}
 	}
 
+	// instrument check
 	for (var i = 0; i < instruments.length; i++) {
 		if (tempInd.endsWith(instruments[i])) {
 			returnObject.Instrument = instruments[i].substring(0, instruments[i].length - 1).trim();
@@ -268,12 +272,12 @@ function testDiffs(newArr, oldArr) {
 		for (var j = 0; j < diffs.length; j++) {
 			for (var k = 0; k < newArr[instruments[i]][diffs[j]].length; k++) {
 				if (oldNotes == undefined) {
-					console.log("undefined found");
+					console.log("OldNotes is undefined");
 					return true;
 				}
 
 				if (newArr[instruments[i]][diffs[j]][k] != oldArr[instruments[i]][diffs[j]][k]) {
-					console.log("odds found");
+					console.log("OldNotes and Current does not match");
 					return true;
 				}
 			}
@@ -305,7 +309,7 @@ function getSongInfo() {
 		objectSongInfo = gatherSongInfo(chartSongInfo);
 	}
 
-	console.log("done and returning: " + (Date.now() - startSongTime) + "ms.");
+	console.log("done and returning from getSongInfo(): " + (Date.now() - startSongTime) + "ms.");
 	return objectSongInfo;
 }
 
@@ -326,7 +330,7 @@ function getSyncInfo() {
 		objectSyncInfo = createObjects(chartSyncInfo);
 	}
 
-	console.log("done and returning: " + (Date.now() - startSyncTime) + "ms.");
+	console.log("done and returning from getSyncInfo(): " + (Date.now() - startSyncTime) + "ms.");
 	return objectSyncInfo;
 }
 
@@ -347,7 +351,7 @@ function getEventInfo() {
 		objectEventInfo = createObjects(chartEventInfo);
 	}
 
-	console.log("done and returning: " + (Date.now() - startEventTime) + "ms.");
+	console.log("done and returningfrom getEventInfo(): " + (Date.now() - startEventTime) + "ms.");
 	return objectEventInfo;
 }
 
@@ -388,7 +392,7 @@ function getDiffsInfo() {
 		}
 	}
 
-	console.log("done and returning: " + (Date.now() - startDiffsTime) + "ms.");
+	console.log("done and returning from getDiffsInfo(): " + (Date.now() - startDiffsTime) + "ms.");
 	return objectNotesInfo;
 }
 
@@ -404,13 +408,15 @@ function gatherSongInfo(info) {
 	for (var i = 2; i < info.length - 1; i++) {
 		let tempSplit = info[i].trim().split(" ").map(line => line.trim());
 
+		console.log(tempSplit);
+
 		switch (tempSplit[0]) {
 			case "Name": {
-				song = tempSplit.slice(2, tempSplit.length).join(" ").replace(/[^\w\s]/g, "");
+				song = tempSplit.slice(2, tempSplit.length).join(" ");
 				break;
 			}
 			case "Artist": {
-				artist = tempSplit.slice(2, tempSplit.length).join(" ").replace(/[^\w\s]/g, "");
+				artist = tempSplit.slice(2, tempSplit.length).join(" ");
 				break;
 			}
 			case "Album": {
@@ -454,6 +460,7 @@ function createObjects(infoArr) {
 	var toTap = false;
 	var chordTick = 0;
 
+	// loop through the whole info array and look at each index
 	for (var i = 0; i < infoArr.length; i++) {
 		var lineInfo = infoArr[i].substring(0, infoArr[i].length).trim().replace(/ =/, "").replace(/ "/, " ").split(" ");
 
@@ -461,10 +468,10 @@ function createObjects(infoArr) {
 			lineInfo[0] = parseInt(lineInfo[0]);
 
 			switch (lineInfo[1]) {
-				case "N": {
+				case "N": {	// note tag
 					lineInfo[2] = parseInt(lineInfo[2]);
 
-					console.log(lineInfo);
+					console.log("Note Found: " + lineInfo);
 
 					if (lineInfo[0] == chordTick) {
 						// if the line has the same tick as the one before
@@ -633,11 +640,11 @@ function createObjects(infoArr) {
 					}
 					*/
 				}
-				case "S": {
+				case "S": { // star power tag
 					returnArray.push(new StarPower(lineInfo[0], parseInt(lineInfo[3])));
 					break;
 				}
-				case "TS": {
+				case "TS": { // time signature tag
 					if (lineInfo[3]) {
 						returnArray.push(new TimeSignature(lineInfo[0], parseInt(lineInfo[2]), parseInt(lineInfo[3])));
 					} else {
@@ -645,43 +652,43 @@ function createObjects(infoArr) {
 					}
 					break;
 				}
-				case "B": {
+				case "B": { // bpm tag
 					returnArray.push(new BPM(lineInfo[0], parseInt(lineInfo[2])));
 					break;
 				}
-				case "E": {
+				case "E": { // event tag
 					lineInfo[2] = lineInfo[2].replace(/[^\w\s]/g, "");
 
 					switch (lineInfo[2]) {
-						case "solo": {
+						case "solo": { // solo event tag
 							returnArray.push(new SoloEvent(lineInfo[0]));
 							break;
 						}
-						case "soloend": {
+						case "soloend": { // solo end event tag
 							returnArray.push(new SoloEndEvent(lineInfo[0]));
 							break;
 						}
-						case "section": {
+						case "section": { // section even tag
 							returnArray.push(new SectionEvent(lineInfo[0], lineInfo.slice(3, lineInfo.length).join(" ")));
 							break;
 						}
-						case "lyric": {
+						case "lyric": { // lyric event tag
 							returnArray.push(new LyricEvent(lineInfo[0], lineInfo.slice(3, lineInfo.length).join(" ")));
 							break;
 						}
-						case "phrase_start": {
+						case "phrase_start": { // phrase start event tag
 							returnArray.push(new PhraseStartEvent(lineInfo[0]));
 							break;
 						}
-						case "phrase_end": {
+						case "phrase_end": { // phrase end event tag
 							returnArray.push(new PhraseEndEvent(lineInfo[0]));
 							break;
 						}
-						case "default": {
+						case "default": { // default event tag
 							returnArray.push(new BaseEvent(lineInfo[0], "default", false))
 							break;
 						}
-						default: {
+						default: { // log other evnets
 							console.log("Some other event: " + lineInfo);
 							break;
 						}
@@ -689,7 +696,7 @@ function createObjects(infoArr) {
 
 					break;
 				}
-				default: {
+				default: { // log other stuff found
 					console.log("other stuff: " + lineInfo);
 				}
 			}

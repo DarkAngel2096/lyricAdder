@@ -634,7 +634,7 @@ function modifyEventsAndOriginalChart() {
 
 	for (var i = 0; i < eventsAll.length; i++) {
 		if (!modifiedLyricEventArray.length) break;
-		if (eventsAll[i].match(/E ("lyric |"Default")/)) {
+		if (eventsAll[i].match(/E ("lyric|"Default")/)) {
 			found++;
 			eventsAll[i] = modifiedLyricEventArray.shift();
 		} else {
@@ -677,10 +677,10 @@ function dataSifter() {
 
 	sifter.methodCalls();
 }
-
+*/
 const newChart = require ("./mainJS/newChart.js");
 
-// function to test chartReads.js
+// function to test newChart.js
 function fileReader() {
 	//console.log(document.getElementById("chartReaderInput"));
 
@@ -699,7 +699,7 @@ function fileReader() {
 	console.log(notes);
 //	console.log(events[0]);
 //	console.log(events[0].tick);
-}*/
+}
 
 
 
