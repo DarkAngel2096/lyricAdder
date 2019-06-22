@@ -457,16 +457,24 @@ function gatherSongInfo(info) {
 // function to create objects for SyncTrack and Events tags
 function createObjects(infoArr) {
 
-	var returnArray = [];
+	var returnArray = []; 			// the array that gets returned and later on put into the global variable
 
-	var chordArray = [];
-	var numberOfNotes = 0;
+	var noteObject = {				// object for keeping track of notes
+		tick: 0,
+		forced: false,
+		tapped: false,
+		chord: false,
+		notes: []
+	}
 
-	var toForce = false;
-	var toTap = false;
-	var chordTick = 0;
 
-	var noteCount = 0;
+	// will not be needed later on probably
+	var toForce = false;			// if the note should be forced
+	var toTap = false;				// if the note should be tapped
+	var toChord = false;			// if the note should be chord
+
+	var noteCountSingular = 0;		// total amount of singular notes, just temporary probably
+	var noteCountStuff = 0;			// amount of notes with chords not being counted as multiples
 
 	// loop through the whole info array and look at each index
 	for (var i = 0; i < infoArr.length; i++) {
@@ -478,178 +486,50 @@ function createObjects(infoArr) {
 
 			switch (lineInfo[1]) {
 				case "N": {	// note tag
+
+					// parse numbers to have an easier time later on, just throw them in the same place they were
 					lineInfo[2] = parseInt(lineInfo[2]);
+					lineInfo[3] = parseInt(lineInfo[3]);
 
-					console.log("Note Found: " + lineInfo);
-					noteCount++;
-
-					if (lineInfo[0] == chordTick) {
-						// if the line has the same tick as the one before
-						//console.log("chord found: " + lineInfo + ", tick: " + chordTick);
-
-						chordArray.push(lineInfo);
-					} else {
-						// if not, go through what's found and make objects, also add the first one to the list
-						for (let j = 0; j < 2; j++) {
-							for (let k = 0; k < chordArray.length; k++) {
-								switch (j) {
-									case 1: {
-										switch (chordArray[k][2]) {
-											case 5: toForce = true; break;
-											case 6: toTap = true; break;
-											case 0:
-											case 1:
-											case 2:
-											case 3:
-											case 4:
-											case 7:
-											case 8: {
-												numberOfNotes++;
-											}
-										}
-										break;
-									}
-									case 2: {
-										switch (chordArray[k][2]) {
-											case 0:
-											case 1:
-											case 2:
-											case 3:
-											case 4:
-											case 7:
-											case 8: {
-												if (numberOfNotes > 1) {
-													returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, true, parseInt(lineInfo[3])))
-												} else {
-													returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, false, parseInt(lineInfo[3])))
-												}
-												break;
-											}
-										}
-										break;
-									}
-								}
-							}
-						}
-
-						chordArray = [];
-						chordArray.push(lineInfo);
-						chordTick = lineInfo[0];
-						numberOfNotes = 0;
-					}
-
-
-							// not working either...
-/*					lineInfo[2] = parseInt(lineInfo[2]);
-
-					// check if it's part of a bunch of events with the same tick (also taking taps and forces)
-					if (lineInfo[0] == chordTick) {
-						//console.log("pushed: " + lineInfo + " to chord array");
-						chordArray.push(lineInfo);
-						numberOfNotes++;
-					} else if (lineInfo[0] != chordTick) {
-						if (chordArray.length > 1) {
-							for (var j = 0; j < 2; j++) {
-								for (var k = 0; k < chordArray.length; k++) {
-									switch (j) {
-										case 0: {
-											switch (chordArray[k][2]) {
-												case "5": {
-													toForce = true;
-													break;
-												}
-												case "6": {
-													toTap = true;
-													break;
-												}
-												case "0":
-												case "1":
-												case "2":
-												case "3":
-												case "4":
-												case "7":
-												case "8": {
-													numberOfNotes++;
-													break;
-												}
-											}
-											break;
-										}
-										case 1: {
-											switch (chordArray[k][2]) {
-												case "0":
-												case "1":
-												case "2":
-												case "3":
-												case "4":
-												case "7":
-												case "8": {
-													if (numberOfNotes > 1) {
-														returnArray.push(new Note(chordArray[k][0], chordArray[k][2], toForce, toTap, true, parseInt(chordArray[k][3])));
-													} else {
-														returnArray.push(new Note(chordArray[k][0], chordArray[k][2], toForce, toTap, false, parseInt(chordArray[k][3])));
-													}
-													break;
-												}
-											}
-											break;
-										}
-									}
-								}
-							}
-
-							toForce = false;
-							toTap = false;
-							numberOfNotes = 0;
-
-							chordArray = [];
-						} else {
-							returnArray.push(new Note(lineInfo[0], lineInfo[2], false, false, false, parseInt(lineInfo[3])));
-							numberOfNotes++;
-						}
-
-						chordArray.push(lineInfo);
-						chordTick = lineInfo[0];
-					}
-
-					break;*/
-
-					/*				// IS NOT WORKING PROPERLY
-					lineInfo[2] = parseInt(lineInfo[2]);
-
-					switch (lineInfo[2]) {
-						case 0:			// green		// white 1
-						case 1:			// red			// white 2
-						case 2:			// yellow		// white 3
-						case 3:			// blue			// black 1
-						case 4:			// orange		// black 2
-						case 7:			// open			// open
-						case 8: {		// not used		// black 3
-							if (chordTick == lineInfo[0]) {
-								returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, true, parseInt(lineInfo[3])));
-							} else {
-								returnArray.push(new Note(lineInfo[0], lineInfo[2], toForce, toTap, false, parseInt(lineInfo[3])));
-							}
-							chordTick = lineInfo[0];
-
-							toForce = false;
-							toTap = false;
-
-							break;
-						}
-						case 5: {		// force		// force
-							toForce = true;
-
-							break;
-						}
-						case 6: {		// tap			// tap
-							toTap = true;
-
-							break;
+					// check if the tick is the same as the notes before it
+					// if it is, then just add the note to the list, unless it's forced or tapped
+					if (noteObject.tick == lineInfo[0]) {
+						// switch with what we've found
+						switch (lineInfo[2]) {
+							case 5: noteObject.forced = true; break;
+							case 6: noteObject.tapped = true; break;
+							default: noteObject.notes.push(lineInfo); break;
 						}
 					}
-					*/
+					// if it is not the same then create the Note classes, clear the object and add the new tick etc...
+					if (noteObject.tick != lineInfo[0] || infoArr.length - 2 == i) {
+						// do we have more than one note on a tick for a chord?
+						if (noteObject.notes.length > 1) {
+							noteObject.chord = true;
+						}
 
+						// just a counter to see the amount of singular notes in a song
+						noteCountSingular += noteObject.notes.length;
+						noteCountStuff++;
+
+						// loop through the notes part of the noteObject
+						for (var j = 0; j < noteObject.notes.length; j++) {
+
+							// this will miss the last note of the song no matter what things are, that is why there needs to be a loop at the end as well
+							var note = new Note(noteObject.notes[j][0], noteObject.notes[j][2], noteObject.tapped,
+								noteObject.forced, noteObject.chord, noteObject.notes[j][3]);
+
+							returnArray.push(note);
+						}
+
+						// clear the noteObject forced, tapped and chord variables as well as new tick and clear the notes tho push the new line to it
+						noteObject.tick = lineInfo[0];
+						noteObject.forced = false;
+						noteObject.tapped = false;
+						noteObject.chord = false;
+						noteObject.notes = [];
+						noteObject.notes.push(lineInfo);
+					}
 					break;
 				}
 				case "S": { // star power tag
@@ -671,7 +551,7 @@ function createObjects(infoArr) {
 				case "E": { // event tag
 					lineInfo[2] = lineInfo[2].replace(/[^\w\s]/g, "");
 
-					switch (lineInfo[2]) {
+					switch (lineInfo[2].toLowerCase()) {
 						case "solo": { // solo event tag
 							returnArray.push(new SoloEvent(lineInfo[0]));
 							break;
@@ -715,7 +595,7 @@ function createObjects(infoArr) {
 		}
 	}
 
-	console.log("Note Count: " + noteCount);
+	console.log("Note Count complete: " + noteCountSingular + ", total: " + noteCountStuff);
 
 	return returnArray;
 }
