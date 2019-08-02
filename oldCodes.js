@@ -177,3 +177,97 @@ switch (lineInfo[2]) {
 	}
 }
 */
+
+
+
+
+
+
+
+
+/*
+192 = E solo
+192 = E soloend
+192 = E "section Verse 1"
+192 = E "lyric some interesting lyrics"
+192 = E "phrase_start"
+192 = E "phrase_end"
+192 = E "default"
+
+192 = N 0 192
+192 = S 2 192
+192 = TS 4 8
+192 = TS 4
+192 = B 165000
+
+
+[tick, type, firstThing, theRest]
+
+[192, "E", "solo"]
+[192, "E", "soloend"]
+[192, "E", "section", "Verse 1"]
+[192, "E", "lyric", "some interesting lyrics"]
+[192, "E", "phrase_start"]
+[192, "E", "phrase_end"]
+
+[192, "N", 0, 192]
+[192, "S", 2, 192]
+[192, "TS", 4, 8]
+[192, "TS", 4]
+[192, "B", 165000]
+*/
+
+
+		/*if (lineInfo.length != 1) {
+			if (["N", "TS", "B", "S"].includes(lineInfo[2])) {
+				switch (lineInfo[2]) {
+					case "N": {
+						console.log("Note");
+						break;
+					}
+					case "S": {
+						console.log("SP");
+						break;
+					}
+					case "TS": {
+						console.log("TS");
+						break;
+					}
+					case "B": {
+						console.log("BPM");
+						break;
+					}
+					default: {
+						console.log("Other");
+						break;
+					}
+				}
+			} else if (lineInfo[2].includes("E")) {
+				switch (lineInfo[3]) {
+					case "solo": {
+						console.log("Solo start at: " + lineInfo[0]);
+						break;
+					}
+					case "soloend": {
+						console.log("Soloend at: " + lineInfo[0]);
+						break;
+					}
+					case "phrase_start": {
+						console.log("Phrase start");
+						break;
+					}
+					case "phrase_end": {
+						console.log("Phrase end");
+						break;
+					}
+					case "lyric": {
+						console.log("Lyric: " + lineInfo[4]);
+						break;
+					}
+					case "section": {
+						console.log("Section");
+						break;
+					}
+				}
+			}
+		}*/
