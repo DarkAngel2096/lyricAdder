@@ -22,6 +22,8 @@ var lastModifiedChartFile = 0;
 document.getElementById("version").innerHTML = config.version;
 
 var HTMLChartFilePath = document.getElementById("chartFilePathInput");
+let HTMLMIDIFilePath = document.getElementById("midiFilePathInput");
+
 var HTMLLyricInput = document.getElementById("lyricsInputArea");
 
 var HTMLChartInfoDiv = document.getElementById("chartAndPhraseInfo");
@@ -103,7 +105,11 @@ let timeout;
 const DEBOUNCE_DELAY = 500;
 $("#lyricsInputArea").on("input propertychange", () => {
 	if (timeout) clearTimeout(timeout);
-	timeout = setTimeout(() => writeLyrics(), DEBOUNCE_DELAY);
+	if (HTMLChartFilePath.files[0]) {
+		timeout = setTimeout(() => writeLyrics(), DEBOUNCE_DELAY);
+	} else if (HTMLMIDIFilePath.files[0]) {
+		timeout = setTimeout(() => midiParse(), DEBOUNCE_DELAY);
+	}
 });
 
 // Button to restore the last lyric input from the config file
@@ -595,10 +601,10 @@ function writeBackupOfOriginalChart() {
 	var chartName, artistName;
 	for (var i = 0; i < chartInfo.length; i++) {
 		if (chartInfo[i].includes("Name =")) {
-			tempSongName = chartInfo[i].split("\"")[1];
+			tempSongName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
 		if (chartInfo[i].includes("Artist =")) {
-			tempArtistName = chartInfo[i].split("\"")[1];
+			tempArtistName = chartInfo[i].split("\"")[1].replace(/[^\w\s]/g, "");
 		}
 	}
 

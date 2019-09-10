@@ -27,7 +27,7 @@
 						<i class="far fa-file-audio"></i> Lyric Preview
 					</a>
 				</li>
-				<!-- -->
+				<!--
 				<li>
 					<a class="sideButton" name="difficultyPage" href="#">
 						<i class ="fas fa-less-than"></i> Difficulties
@@ -43,7 +43,7 @@
 						<i class="fas fa-book-reader"></i> Chart Reader
 					</a>
 				</li>
-				<!-- -->
+			 	-->
 				<li>
 					<label>
 						<input type="checkbox" id="dark-mode-toggle" />
@@ -81,6 +81,11 @@
 				<input type="file" id="chartFilePathInput" name="chartInput" accept=".chart" onchange="writePath()"></input>
 				<button type="button" onclick="getLyricsFromChartButton()">Read .chart for lyrics</button>
 				<br>
+
+				<label for="midiInput">Select the midi to modify</label>
+				<input type="file" id="midiFilePathInput" name="midiInput" accept=".mid" onchange="midiParse()"></input>
+				<button type="button" onclick="getLyricsFromMIDIButton()">Read .mid for lyrics</button>
+				<br>
 				<div id="chartAndPhraseInfo" class="pane hidden">
 					<br>
 					<label for="chartName">Selected chart:</label>
@@ -97,9 +102,11 @@
 					<br>
 					<label for="phrasesAndLyrics">{phrase number, lyric event count - syllable count}:</label>
 					<button type="button" onclick="showPhrasesAndLyrics()">Toggle lyrics and syllables</button>
-					<br>
 					<div id="phraseDiv" class="hidden"></div>
+					<br>
+
 					<button id="writeButton" type="button" onclick="testAndWriteChart()" class="pane hidden">Write new chart</button>
+					<button id="writeMidiButton" type="button" onclick="writeMidiFile()" class="pane hidden">Write new MIDI</button>
 				</div>
 				<span id="noChartFile" class="pane hidden">No .chart file selected</span>
 				<span id="noLyrcisWritten" class="pane hidden">No lyrics written in the text box below</span>
@@ -244,6 +251,7 @@
 	});
 	</script>
 	<script src="./mainScripts.js"></script>
+	<script src="./midiScripts.js"></script>
 	<!--<script src="./twitchTests.js"></script>-->
 
 	<script src="./js/lined.js"></script>
