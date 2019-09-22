@@ -507,21 +507,21 @@ function writeLyricsBuffer() {
 			for (let pitchEvent of phraseLyric.pitches) {
 
 				// start event
-				let pitchStartNote = createNoteBytes(pitchNote.startTick - currentTick, pitchNote.pitch, "On", lastEvent);
+				let pitchStartNote = createNoteBytes(pitchEvent.startTick - currentTick, pitchEvent.pitch, "On", lastEvent);
 
 				// these also update the currentTick and lastEvent values
 				currentTick += pitchStartNote.ticks;
 				lastEvent = pitchStartNote.event;
 
 				// end event
-				let pitchEndNote = createNoteBytes(pitchNote.endtick - currentTick, pitchNote.pitch, "On", lastEvent);
+				let pitchEndNote = createNoteBytes(pitchEvent.endTick - currentTick, pitchEvent.pitch, "Off", lastEvent);
 
 				// these also update the currentTick and lastEvent values
 				currentTick += pitchEndNote.ticks;
 				lastEvent = pitchEndNote.event;
 
 				// add these to the lyricEvent.buffer value which gets updated soon to the phrase buffer
-				lyricEvent.buffer = Buffer.concat([lyricEvent.buffer, pitchStartNote, pitchEndNote]);
+				lyricEvent.buffer = Buffer.concat([lyricEvent.buffer, pitchStartNote.buffer, pitchEndNote.buffer]);
 			}
 
 			// add the lyricEvent buffer now to the phrase buffer
@@ -558,6 +558,9 @@ function writeLyricsBuffer() {
 // function to write phrase start and end bytes
 function createNoteBytes(deltaTimeTick, noteValue, OnOff, lastEvent) {
 
+	// log some stuff temporary
+	//console.log("Note Byte:" + deltaTimeTick + ", " + noteValue + ", " + OnOff + ", " + lastEvent);
+
 	// get the variable length value
 	let deltaTimeBuffer = createVariableLengthHex(deltaTimeTick);
 
@@ -566,7 +569,7 @@ function createNoteBytes(deltaTimeTick, noteValue, OnOff, lastEvent) {
 
 	// check for running status and add the noteOn byte only if needed
 	if (lastEvent != "note on") {
-		console.log("note on byte added: " + lastEvent);
+		console.log("note on byte added when last event is: " + lastEvent);
 		createBuffer.push(144);
 	}
 
@@ -589,6 +592,9 @@ function createNoteBytes(deltaTimeTick, noteValue, OnOff, lastEvent) {
 
 // function to build lyricEvents (going to change this to build any type of meta event probably later on)
 function createLyricBytes(deltaTimeTick, text) {
+
+	// log some stuff temporary
+	//console.log("Lyric Byte:" + deltaTimeTick + ", " + text);
 
 	// get the variable length value
 	let deltaTimeBuffer = createVariableLengthHex(deltaTimeTick);
