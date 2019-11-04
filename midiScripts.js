@@ -19,7 +19,7 @@ var HTMLNoLyricsWritten = document.getElementById("noLyrcisWritten");
 var HTMLErrorDiv = document.getElementById("problemCauses");
 var HTMLErrorMessage = document.getElementById("cautionMessage");
 
-var HTMLWriteButton = document.getElementById("writeMidiButton");
+var HTMLMidiWriteButton = document.getElementById("writeMidiButton");
 
 // global variables
 let midiPath;
@@ -233,7 +233,7 @@ function midiParse() {
 		HTMLChartName.innerHTML = HTMLMIDIFilePath.files[0].path.split("\\")[HTMLMIDIFilePath.files[0].path.split("\\").length - 2]
 		HTMLChartInfoDiv.style.display = "block";
 		HTMLPhraseDiv.style.display = "none";
-		HTMLWriteButton.style.display = "block";
+		HTMLMidiWriteButton.style.display = "block";
 	} else {
 		console.log("Times match, no need to read and parse the file");
 	}
@@ -250,7 +250,7 @@ function midiParse() {
 		totalLyrics += phrases.events.length;
 	}
 
-	totalInputSyllables = readLyricInput();
+	totalInputSyllables = readMidiLyricInput();
 
 
 	// then update the UI
@@ -259,13 +259,13 @@ function midiParse() {
 	HTMLSyllableCount.innerHTML = totalInputSyllables + " syllables found";
 
 	// and test if the events and syllables match up
-	testLyricEventsAndSyllables();
+	testMidiLyricEventsAndSyllables();
 
 }
 
 // Reading the lyric textarea and creating an array with each row being it's own phrase and splitting syllables after that (2D array)
 // Return count of syllables
-function readLyricInput() {
+function readMidiLyricInput() {
 	let lyricsInputFull = HTMLLyricInput.value.trim().split("\n");
 	lyricsInputArray = [];
 
@@ -304,7 +304,7 @@ function readLyricInput() {
 
 // Test if the syllable array length and lyric event array lengths are the same
 // Return a string of each phrase and it's event / syllable count
-function testLyricEventsAndSyllables() {
+function testMidiLyricEventsAndSyllables() {
 
 	// remove all elements if there are any in the phrase div
 	while (HTMLPhraseDiv.firstChild) {
@@ -682,7 +682,7 @@ function createVariableLengthHex(inputNum) {
 function writeInputToLyrics() {
 
 	// read from the input to make sure everything is up to date
-	readLyricInput();
+	readMidiLyricInput();
 
 	// only write things down if the lyric events match up
 	let shouldFail = false;
