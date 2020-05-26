@@ -1,0 +1,13 @@
+#sideBarWrapper {
+	position: fixed;
+	width: 150px;
+	height: 100%;
+	background: #C0C0C0;
+	overflow-y: auto;
+	margin-left: -8px;
+}
+
+#mainScreenWrapper {
+	padding-left: 150px;
+	background: #00FF00;
+}

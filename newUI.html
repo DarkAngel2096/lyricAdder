@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Lyric Adding Thingy</title>
+
+		<link rel="stylesheet" href="./css/newMainTheme.css">
+	</head>
+
+
+	<body>
+
+		<div id="sideBarWrapper">
+
+		</div>
+
+		<div id="mainScreenWrapper">
+			<h1>How would this work..?</h1>
+			<hr>
+		</div>
+
+	</body>
+
+	<!-- script to toggle the console on and off, as well as reload the page -->
+	<script>
+		document.addEventListener("keydown", function (e) {
+			if (e.which === 123) {
+				require('electron').remote.getCurrentWindow().toggleDevTools();
+			} else if (e.which === 116) {
+				location.reload();
+			}
+		});
+	</script>
+
+</html>
