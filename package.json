@@ -27,7 +27,7 @@
     "twitch-js": "^1.2.15"
   },
   "devDependencies": {
-    "electron": "^3.0.2",
+    "electron": "^15.5.5",
     "electron-packager": "^12.2.0"
   }
 }
